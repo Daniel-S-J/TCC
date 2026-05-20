@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VetZoone — Cuidado que seu pet merece</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Paytone+One&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a3f5c;
+  --blue:#2a5f7f;
+  --mid:#5bafd6;
+  --light:#e8f3f9;
+  --pale:#f0f6fa;
+  --white:#ffffff;
+  --accent:#3dd4f5;
+  --gold:#ffe066;
+}
+
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--navy);
+  color:var(--white);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ===== CURSOR ===== */
+#cursor{
+  position:fixed;width:22px;height:22px;
+  background:var(--accent);border-radius:50%;
+  pointer-events:none;z-index:99999;
+  transform:translate(-50%,-50%);
+  transition:transform .1s,width .2s,height .2s,background .2s;
+  mix-blend-mode:screen;
+}
+#cursor.hover{width:40px;height:40px;background:var(--gold);}
+
+/* ===== CANVAS BACKGROUND ===== */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+/* ===== HERO ===== */
+#hero{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:2rem;
+  overflow:hidden;
+}
+
+.hero-glow{
+  position:absolute;width:700px;height:700px;
+  background:radial-gradient(circle,rgba(91,175,214,0.22) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:pulse-glow 4s ease-in-out infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1;}
+  50%{transform:translate(-50%,-50%) scale(1.15);opacity:.6;}
+}
+
+/* Logo animado */
+.logo-wrap{
+  display:flex;align-items:center;gap:16px;margin-bottom:1.5rem;
+  animation:logoIn 1s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes logoIn{from{opacity:0;transform:translateY(-40px) scale(.8)}to{opacity:1;transform:none}}
+
+.logo-icon-big{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,var(--blue),var(--mid));
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;
+  box-shadow:0 0 40px rgba(91,175,214,0.6),0 0 80px rgba(91,175,214,0.2);
+  animation:icon-bounce 3s ease-in-out infinite;
+}
+@keyframes icon-bounce{
+  0%,100%{transform:translateY(0) rotate(-3deg);}
+  50%{transform:translateY(-10px) rotate(3deg);}
+}
+
+.logo-name{
+  font-family:'Paytone One',sans-serif;
+  font-size:clamp(52px,10vw,96px);
+  letter-spacing:-2px;
+  background:linear-gradient(135deg,#ffffff 0%,var(--mid) 50%,var(--accent) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 30px rgba(61,212,245,0.5));
+  animation:shimmer 3s linear infinite;
+  background-size:200% auto;
+}
+@keyframes shimmer{
+  0%{background-position:0% center}
+  100%{background-position:200% center}
+}
+
+.tagline{
+  font-size:clamp(16px,3vw,26px);
+  font-weight:700;
+  color:rgba(255,255,255,0.75);
+  max-width:600px;
+  animation:fadeUp .8s .4s ease both;
+  margin-bottom:2.5rem;
+  line-height:1.5;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+
+.cta-wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;animation:fadeUp .8s .7s ease both;}
+
+.btn-cta{
+  padding:14px 36px;border-radius:50px;font-family:'Nunito',sans-serif;
+  font-size:16px;font-weight:800;border:none;cursor:none;
+  transition:.2s;text-decoration:none;display:inline-block;
+}
+.btn-cta.primary{
+  background:linear-gradient(135deg,var(--mid),var(--accent));
+  color:var(--navy);
+  box-shadow:0 0 30px rgba(61,212,245,0.5);
+}
+.btn-cta.primary:hover{transform:scale(1.07);box-shadow:0 0 50px rgba(61,212,245,0.8);}
+.btn-cta.outline{
+  background:transparent;color:var(--white);
+  border:2px solid rgba(91,175,214,0.6);
+}
+.btn-cta.outline:hover{background:rgba(91,175,214,0.15);border-color:var(--accent);}
+
+/* ===== PAWPRINTS FLUTUANTES ===== */
+.paw-float{
+  position:absolute;font-size:28px;
+  animation:paw-drift linear infinite;
+  opacity:0;pointer-events:none;
+  filter:drop-shadow(0 0 12px var(--accent));
+}
+@keyframes paw-drift{
+  0%{transform:translateY(0) rotate(0deg) scale(0.5);opacity:0;}
+  10%{opacity:.9;}
+  90%{opacity:.6;}
+  100%{transform:translateY(-120vh) rotate(720deg) scale(1.2);opacity:0;}
+}
+
+/* ===== STATS STRIP ===== */
+#stats{
+  position:relative;z-index:1;
+  background:linear-gradient(90deg,rgba(26,63,92,0.9),rgba(42,95,127,0.9));
+  border-top:1px solid rgba(91,175,214,0.3);
+  border-bottom:1px solid rgba(91,175,214,0.3);
+  padding:2.5rem 2rem;
+  display:flex;justify-content:center;gap:clamp(2rem,6vw,6rem);flex-wrap:wrap;
+  backdrop-filter:blur(10px);
+}
+.stat{text-align:center;}
+.stat-num{
+  font-family:'Paytone One',sans-serif;
+  font-size:clamp(36px,6vw,60px);
+  background:linear-gradient(135deg,var(--accent),var(--mid));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 16px rgba(61,212,245,0.6));
+}
+.stat-label{font-size:14px;color:rgba(255,255,255,0.6);font-weight:700;margin-top:4px;}
+
+/* ===== SERVICES ===== */
+#servicos{
+  position:relative;z-index:1;
+  padding:5rem 2rem;text-align:center;
+}
+.section-title{
+  font-family:'Paytone One',sans-serif;
+  font-size:clamp(28px,5vw,50px);
+  margin-bottom:.5rem;
+  background:linear-gradient(135deg,#fff,var(--mid));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-sub{font-size:16px;color:rgba(255,255,255,0.55);margin-bottom:3rem;font-weight:600;}
+
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:24px;max-width:1100px;margin:0 auto;
+}
+.card{
+  background:linear-gradient(145deg,rgba(42,95,127,0.5),rgba(26,63,92,0.8));
+  border:1px solid rgba(91,175,214,0.25);
+  border-radius:20px;padding:2rem 1.5rem;
+  transition:.3s;cursor:none;
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(12px);
+  opacity:0;transform:translateY(40px);
+}
+.card.visible{animation:cardIn .6s ease both;}
+@keyframes cardIn{to{opacity:1;transform:none}}
+.card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at top right,rgba(61,212,245,0.12),transparent 60%);
+  opacity:0;transition:.3s;
+}
+.card:hover{
+  transform:translateY(-8px) scale(1.02);
+  border-color:rgba(61,212,245,0.5);
+  box-shadow:0 20px 60px rgba(61,212,245,0.2),inset 0 0 30px rgba(61,212,245,0.05);
+}
+.card:hover::before{opacity:1;}
+.card-icon{font-size:44px;margin-bottom:1rem;display:block;animation:icon-spin-slow 8s linear infinite;}
+@keyframes icon-spin-slow{0%,100%{transform:rotate(-5deg) scale(1)}50%{transform:rotate(5deg) scale(1.1)}}
+.card-title{font-size:18px;font-weight:800;margin-bottom:.5rem;color:var(--accent);}
+.card-desc{font-size:14px;color:rgba(255,255,255,0.65);line-height:1.6;}
+
+/* ===== PATA CENTRAL BRILHANTE ===== */
+#paw-section{
+  position:relative;z-index:1;
+  padding:5rem 2rem;
+  text-align:center;overflow:hidden;
+}
+.mega-paw{
+  font-size:200px;
+  filter:drop-shadow(0 0 60px var(--accent)) drop-shadow(0 0 120px rgba(91,175,214,0.5));
+  animation:mega-pulse 2.5s ease-in-out infinite;
+  display:inline-block;
+  cursor:none;
+}
+@keyframes mega-pulse{
+  0%,100%{transform:scale(1) rotate(-5deg);filter:drop-shadow(0 0 60px var(--accent)) drop-shadow(0 0 120px rgba(91,175,214,0.5));}
+  50%{transform:scale(1.08) rotate(5deg);filter:drop-shadow(0 0 100px var(--accent)) drop-shadow(0 0 200px rgba(91,175,214,0.6));}
+}
+.orbit-ring{
+  position:absolute;top:50%;left:50%;
+  border-radius:50%;border:1px dashed rgba(91,175,214,0.3);
+  transform:translate(-50%,-50%);
+  animation:orbit-rotate linear infinite;
+}
+.orbit-ring:nth-child(1){width:340px;height:340px;animation-duration:12s;}
+.orbit-ring:nth-child(2){width:460px;height:460px;animation-duration:18s;animation-direction:reverse;}
+.orbit-ring:nth-child(3){width:580px;height:580px;animation-duration:25s;}
+@keyframes orbit-rotate{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+.orbit-paw{
+  position:absolute;font-size:22px;top:0;left:50%;transform:translateX(-50%) translateY(-50%);
+  filter:drop-shadow(0 0 8px var(--mid));
+}
+
+/* ===== TESTIMONIALS ===== */
+#depoimentos{
+  position:relative;z-index:1;
+  padding:4rem 2rem;text-align:center;
+  background:linear-gradient(180deg,transparent,rgba(26,63,92,0.5),transparent);
+}
+.testimonials-track{
+  display:flex;gap:24px;max-width:1100px;margin:0 auto;
+  overflow:hidden;position:relative;
+}
+.testimonial{
+  min-width:300px;flex:1;
+  background:rgba(42,95,127,0.4);
+  border:1px solid rgba(91,175,214,0.2);
+  border-radius:16px;padding:1.5rem;text-align:left;
+  transition:.3s;
+}
+.testimonial:hover{border-color:rgba(61,212,245,0.4);transform:scale(1.02);}
+.test-stars{color:var(--gold);font-size:18px;margin-bottom:.75rem;filter:drop-shadow(0 0 6px rgba(255,224,102,0.6));}
+.test-text{font-size:14px;color:rgba(255,255,255,0.8);line-height:1.65;margin-bottom:1rem;}
+.test-author{display:flex;align-items:center;gap:10px;}
+.test-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--mid));display:flex;align-items:center;justify-content:center;font-size:16px;}
+.test-name{font-size:13px;font-weight:800;color:var(--accent);}
+.test-pet{font-size:11px;color:rgba(255,255,255,0.45);}
+
+/* ===== CTA FINAL ===== */
+#cta-final{
+  position:relative;z-index:1;
+  padding:6rem 2rem;text-align:center;
+  overflow:hidden;
+}
+.cta-bg-glow{
+  position:absolute;width:600px;height:600px;
+  background:radial-gradient(circle,rgba(61,212,245,0.15) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:pulse-glow 5s ease-in-out infinite;
+}
+.cta-final-title{
+  font-family:'Paytone One',sans-serif;
+  font-size:clamp(28px,6vw,60px);
+  margin-bottom:1rem;
+  line-height:1.1;
+}
+.cta-highlight{
+  background:linear-gradient(135deg,var(--accent),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 20px rgba(61,212,245,0.5));
+}
+.cta-final-sub{
+  font-size:18px;color:rgba(255,255,255,0.6);margin-bottom:2.5rem;font-weight:600;
+}
+
+/* ===== FOOTER ===== */
+footer{
+  position:relative;z-index:1;
+  text-align:center;padding:2rem;
+  border-top:1px solid rgba(91,175,214,0.15);
+  font-size:13px;color:rgba(255,255,255,0.35);
+}
+.footer-logo{
+  font-family:'Paytone One',sans-serif;
+  font-size:24px;
+  background:linear-gradient(135deg,var(--mid),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.5rem;
+}
+
+/* ===== GLITTER PARTICLES ===== */
+.glitter{
+  position:fixed;pointer-events:none;z-index:9998;
+  border-radius:50%;
+  animation:glitter-fall linear forwards;
+}
+@keyframes glitter-fall{
+  0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg);}
+  100%{opacity:0;transform:translateY(80px) scale(0) rotate(360deg);}
+}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-glow"></div>
+
+  <!-- Patinhas flutuantes geradas via JS -->
+
+  <div class="logo-wrap">
+    <div class="logo-icon-big">🐾</div>
+    <h1 class="logo-name">VetZoone</h1>
+  </div>
+
+  <p class="tagline">O cuidado que seu pet merece, com a tecnologia que você precisa 🐶🐱</p>
+
+  <div class="cta-wrap">
+    <a href="#servicos" class="btn-cta primary">Conhecer serviços</a>
+    <a href="VetZoone.html" class="btn-cta outline">Agendar consulta</a>
+  </div>
+</section>
+
+
+<!-- ===== SERVIÇOS ===== -->
+<section id="servicos">
+  <h2 class="section-title reveal">Nossos Serviços</h2>
+  <p class="section-sub reveal">Tudo que seu pet precisa em um só lugar</p>
+  <div class="cards-grid">
+    <div class="card">
+      <span class="card-icon">🩺</span>
+      <div class="card-title">Consultas & Exames</div>
+      <div class="card-desc">Atendimento clínico completo com veterinários experientes e equipamentos modernos.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">💉</span>
+      <div class="card-title">Vacinas & Prevenção</div>
+      <div class="card-desc">Calendário vacinal completo para cães, gatos e outros animais. Proteja quem você ama.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔬</span>
+      <div class="card-title">Laboratório</div>
+      <div class="card-desc">Exames laboratoriais rápidos e precisos. Diagnóstico ágil para começar o tratamento certo.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PATA CENTRAL ===== -->
+<section id="paw-section">
+  <div class="orbit-ring"><span class="orbit-paw">🐾</span></div>
+  <div class="orbit-ring"><span class="orbit-paw" style="left:100%;top:50%">🐾</span></div>
+  <div class="orbit-ring"><span class="orbit-paw" style="top:100%;left:50%">🐾</span></div>
+  <div class="mega-paw" id="mega-paw">🐾</div>
+  <div class="reveal" style="margin-top:2rem;">
+    <h2 class="section-title">Feito com amor por animais</h2>
+    <p class="section-sub">Cada patinha que passa aqui leva um pedaço do nosso coração 💙</p>
+  </div>
+</section>
+
+
+<!-- ===== CTA FINAL ===== -->
+<section id="cta-final">
+  <div class="cta-bg-glow"></div>
+  <h2 class="cta-final-title reveal">
+    Seu pet merece o <span class="cta-highlight">melhor</span><br/>do mundo
+  </h2>
+  <p class="cta-final-sub reveal">Agende agora e ganhe 10% de desconto na primeira consulta 🎉</p>
+  <div class="reveal" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+  
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-logo">VetZoone 🐾</div>
+  <p>© 2025 VetZoone Clínica Veterinária — Todos os direitos reservados</p>
+  <p style="margin-top:4px">Feito com 💙 para os pets de São Paulo</p>
+</footer>
+
+<script>
+// ===== CURSOR =====
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+});
+document.querySelectorAll('a,button,.card,.btn-cta,.mega-paw').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+// ===== BG CANVAS PARTICLES =====
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+for(let i=0;i<80;i++){
+  particles.push({
+    x: Math.random()*innerWidth,
+    y: Math.random()*innerHeight,
+    r: Math.random()*2+0.5,
+    dx: (Math.random()-.5)*.3,
+    dy: (Math.random()-.5)*.3,
+    alpha: Math.random()*.6+.1
+  });
+}
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // background gradient
+  const grad = ctx.createRadialGradient(canvas.width/2,canvas.height/2,0,canvas.width/2,canvas.height/2,canvas.width*.8);
+  grad.addColorStop(0,'rgba(42,95,127,0.15)');
+  grad.addColorStop(1,'rgba(10,25,40,0.8)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle = `rgba(91,175,214,${p.alpha})`;
+    ctx.shadowBlur = 6; ctx.shadowColor = '#3dd4f5';
+    ctx.fill();
+    p.x += p.dx; p.y += p.dy;
+    if(p.x<0||p.x>canvas.width) p.dx *= -1;
+    if(p.y<0||p.y>canvas.height) p.dy *= -1;
+    // twinkle
+    p.alpha += (Math.random()-.5)*.03;
+    p.alpha = Math.max(.05, Math.min(.8, p.alpha));
+  });
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ===== FLOATING PAWS =====
+const hero = document.getElementById('hero');
+const pawEmojis = ['🐾','🐾','🐾','✨','💙'];
+function spawnPaw(){
+  const paw = document.createElement('span');
+  paw.className = 'paw-float';
+  paw.textContent = pawEmojis[Math.floor(Math.random()*pawEmojis.length)];
+  paw.style.left = Math.random()*100 + 'vw';
+  paw.style.bottom = '-40px';
+  const dur = 6 + Math.random()*8;
+  paw.style.animationDuration = dur + 's';
+  paw.style.fontSize = (18 + Math.random()*24) + 'px';
+  paw.style.animationDelay = '0s';
+  document.body.appendChild(paw);
+  setTimeout(()=>paw.remove(), dur*1000);
+}
+setInterval(spawnPaw, 600);
+
+// ===== GLITTER ON CLICK =====
+document.addEventListener('click', e => {
+  const colors = ['#3dd4f5','#5bafd6','#ffe066','#ffffff'];
+  for(let i=0;i<18;i++){
+    const g = document.createElement('div');
+    g.className = 'glitter';
+    const s = 4 + Math.random()*8;
+    g.style.cssText = `
+      width:${s}px;height:${s}px;
+      left:${e.clientX}px;top:${e.clientY}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      box-shadow:0 0 ${s*2}px ${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${.4+Math.random()*.6}s;
+      transform:translate(${(Math.random()-.5)*80}px,${(Math.random()-.5)*80}px);
+    `;
+    document.body.appendChild(g);
+    setTimeout(()=>g.remove(), 800);
+  }
+});
+
+
+// ===== SCROLL REVEAL =====
+const revealEls = document.querySelectorAll('.reveal, .card');
+const revObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+    }
+  });
+},{threshold:.15});
+revealEls.forEach(el=>revObs.observe(el));
+
+// ===== CARDS stagger =====
+const cards = document.querySelectorAll('.card');
+cards.forEach((c,i)=>{ c.style.transitionDelay = (i*.1)+'s'; });
+
+// ===== MEGA PAW INTERACTION =====
+document.getElementById('mega-paw').addEventListener('click',()=>{
+  const paw = document.getElementById('mega-paw');
+  paw.style.transform = 'scale(1.3) rotate(20deg)';
+  setTimeout(()=>paw.style.transform='',400);
+  // burst
+  for(let i=0;i<30;i++){
+    const g = document.createElement('div');
+    g.className = 'glitter';
+    const rect = paw.getBoundingClientRect();
+    const cx = rect.left+rect.width/2, cy = rect.top+rect.height/2;
+    const s = 6 + Math.random()*10;
+    const colors = ['#3dd4f5','#5bafd6','#ffe066','#ffffff','#a8e6ff'];
+    g.style.cssText = `
+      width:${s}px;height:${s}px;
+      left:${cx}px;top:${cy}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      box-shadow:0 0 ${s*3}px ${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${.5+Math.random()*.8}s;
+      transform:translate(${(Math.random()-.5)*160}px,${(Math.random()-.5)*160}px);
+      border-radius:${Math.random()>0.5?'50%':'4px'};
+    `;
+    document.body.appendChild(g);
+    setTimeout(()=>g.remove(),1000);
+  }
+});
+</script>
+</body>
+</html>
