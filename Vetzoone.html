@@ -1,368 +1,401 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VetZoone — Clínica Veterinária</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================================
-       VARIÁVEIS — MODO CLARO
-    ============================================================ */
-    :root {
-      --primary:       #2a5f7f;
-      --primary-hover: #1f4f6a;
-      --primary-light: #e8f3f9;
-      --primary-mid:   #5bafd6;
-      --text:          #1a3f5c;
-      --muted:         #5a7f96;
-      --border:        #cddee8;
-      --bg-page:       #f0f6fa;
-      --bg-card:       #ffffff;
-      --bg-input:      #f4f9fb;
-      --bg-input-foc:  #ffffff;
-      --bg-sidebar:    #1a3f5c;
-      --bg-topbar:     #ffffff;
-      --bg-login-card: rgba(255,255,255,0.97);
-      --login-grad:    linear-gradient(135deg,#2a5f7f 0%,#1a3f5c 100%);
-      --msg-ok-bg:     #e1f5ee; --msg-ok-text:  #0f6e56;
-      --msg-err-bg:    #fcebeb; --msg-err-text: #a32d2d;
-      --tr-hover:      #f7fbfd;
-      --th-bg:         #f4f9fb;
-      --shadow-focus:  rgba(42,95,127,0.12);
-      --product-img:   linear-gradient(135deg,#e8f3f9,#cee8f5);
-      --toast-bg:      #1a3f5c;
-    }
-
-    /* ============================================================
-       VARIÁVEIS — MODO ESCURO
-    ============================================================ */
-    body.dark {
-      --primary:       #5bafd6;
-      --primary-hover: #3f9bc4;
-      --primary-light: #0e2a3a;
-      --primary-mid:   #5bafd6;
-      --text:          #cce3f0;
-      --muted:         #7aaec8;
-      --border:        #1e3d54;
-      --bg-page:       #0a1820;
-      --bg-card:       #0e2233;
-      --bg-input:      #0c1e2e;
-      --bg-input-foc:  #112437;
-      --bg-sidebar:    #071016;
-      --bg-topbar:     #0e2233;
-      --bg-login-card: rgba(10,25,40,0.97);
-      --login-grad:    linear-gradient(135deg,#0f1e2a 0%,#071016 100%);
-      --msg-ok-bg:     #0a2e20; --msg-ok-text:  #5dcaa5;
-      --msg-err-bg:    #2e0a0a; --msg-err-text: #f09595;
-      --tr-hover:      #0d2233;
-      --th-bg:         #0c1e2e;
-      --shadow-focus:  rgba(91,175,214,0.18);
-      --product-img:   linear-gradient(135deg,#0e2233,#142d42);
-      --toast-bg:      #071016;
-    }
-
-    body {
-      font-family: 'Nunito', sans-serif;
-      min-height: 100vh;
-      background: var(--login-grad);
-      overflow-x: hidden;
-      transition: background .3s;
-    }
-
-    /* Botão modo escuro — fixo no canto */
-    #dark-toggle {
-      position: fixed;
-      top: 14px; right: 14px;
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.3);
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      font-size: 15px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999;
-      transition: background .2s, border-color .2s;
-      backdrop-filter: blur(4px);
-    }
-    #dark-toggle:hover { background: rgba(255,255,255,0.25); }
-    body.dark #dark-toggle {
-      border-color: rgba(91,175,214,0.4);
-      background: rgba(91,175,214,0.15);
-    }
-
-    /* ============================================================
-       TELA LOGIN
-    ============================================================ */
-    #tela-login {
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 2rem 1rem;
-    }
-    #tela-login::before, #tela-login::after {
-      content: '🐾'; position: fixed;
-      font-size: 100px; opacity: 0.05; pointer-events: none;
-    }
-    #tela-login::before { top:-10px; left:-10px; transform:rotate(-20deg); }
-    #tela-login::after  { bottom:-10px; right:-10px; transform:rotate(30deg); }
-
-    .login-card {
-      background: var(--bg-login-card);
-      border-radius: 16px; padding: 2rem 2.25rem;
-      width: 100%; max-width: 400px;
-      border: 0.5px solid rgba(255,255,255,0.15);
-      animation: fadeUp 0.4s ease both;
-      transition: background .3s;
-    }
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(18px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-    .logo { display:flex; align-items:center; gap:10px; margin-bottom:.35rem; justify-content:center; }
-    .logo-icon { width:44px; height:44px; background:var(--primary); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; transition:background .3s; }
-    .logo-text { font-size:28px; font-weight:800; color:var(--text); letter-spacing:-.5px; transition:color .3s; }
-    .logo-text span { color:var(--primary); }
-    .subtitle { text-align:center; font-size:13px; color:var(--muted); margin-bottom:1.5rem; transition:color .3s; }
-    .tabs { display:flex; border-radius:10px; background:var(--bg-input); padding:4px; gap:4px; margin-bottom:1.5rem; transition:background .3s; }
-    .tab-btn { flex:1; height:34px; border:none; border-radius:8px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; cursor:pointer; background:transparent; color:var(--muted); transition:.2s; }
-    .tab-btn.active { background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(42,95,127,0.25); }
-    .page-form { display:none; animation:fadeUp .3s ease both; }
-    .page-form.active { display:block; }
-    .lrow { display:flex; gap:10px; }
-    .lrow .lf { flex:1; }
-    .lf { margin-bottom:.9rem; }
-    .lf label { display:block; font-size:13px; font-weight:700; color:var(--text); margin-bottom:5px; transition:color .3s; }
-    .lf input, .lf select {
-      width:100%; height:40px; border:0.5px solid var(--border); border-radius:8px;
-      padding:0 12px; font-size:14px; font-family:'Nunito',sans-serif;
-      color:var(--text); background:var(--bg-input); outline:none; transition:.15s; appearance:none;
-    }
-    .lf input::placeholder { color:var(--muted); opacity:.7; }
-    .lf input:focus, .lf select:focus { border-color:var(--primary); background:var(--bg-input-foc); box-shadow:0 0 0 3px var(--shadow-focus); }
-    .lf input.invalid { border-color:#e24b4a !important; }
-    .section-label { font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:1rem 0 .5rem; }
-    .divider-line { height:0.5px; background:var(--border); margin-bottom:.9rem; }
-    .forgot { text-align:right; font-size:12px; color:var(--primary); margin-top:-4px; margin-bottom:1.25rem; cursor:pointer; transition:color .3s; }
-    .forgot:hover { text-decoration:underline; }
-    .terms { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--muted); margin-bottom:1rem; line-height:1.5; }
-    .terms input[type=checkbox] { margin-top:2px; accent-color:var(--primary); }
-    .terms a { color:var(--primary); cursor:pointer; }
-    .btn-primary { width:100%; height:44px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; transition:.15s; margin-bottom:.75rem; }
-    .btn-primary:hover { background:var(--primary-hover); }
-    .btn-primary:active { transform:scale(.98); }
-    .switch-link { text-align:center; font-size:13px; color:var(--muted); }
-    .switch-link a { color:var(--primary); font-weight:700; cursor:pointer; }
-    .switch-link a:hover { text-decoration:underline; }
-    .lmsg { display:none; font-size:13px; border-radius:8px; padding:10px 14px; margin-bottom:1rem; text-align:center; font-weight:600; }
-    .lmsg.ok  { display:block; background:var(--msg-ok-bg);  color:var(--msg-ok-text); }
-    .lmsg.err { display:block; background:var(--msg-err-bg); color:var(--msg-err-text); }
-    .footer-note { text-align:center; font-size:11px; color:var(--muted); margin-top:1.25rem; padding-top:1rem; border-top:0.5px solid var(--border); }
-
-    /* ============================================================
-       DASHBOARD
-    ============================================================ */
-    #tela-dashboard { display:none; min-height:100vh; background:var(--bg-page); transition:background .3s; }
-    .app { display:flex; min-height:100vh; }
-
-    /* SIDEBAR */
-    .sidebar { width:220px; background:var(--bg-sidebar); display:flex; flex-direction:column; flex-shrink:0; position:fixed; top:0; left:0; bottom:0; z-index:10; transition:background .3s; }
-    .sidebar-logo { padding:1.25rem 1.25rem 1rem; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,0.08); }
-    .s-logo-icon { width:36px; height:36px; background:#2a5f7f; border:2px solid rgba(255,255,255,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
-    .s-logo-txt { font-size:20px; font-weight:800; color:#fff; letter-spacing:-.5px; }
-    .s-logo-txt span { color:#5bafd6; }
-    .nav { flex:1; padding:.75rem 0; overflow-y:auto; }
-    .nav-section { font-size:10px; font-weight:800; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:1.5px; padding:.5rem 1.25rem .25rem; }
-    .nav-item { display:flex; align-items:center; gap:10px; padding:.6rem 1.25rem; cursor:pointer; font-size:13.5px; font-weight:700; color:rgba(255,255,255,0.6); border-left:3px solid transparent; transition:.15s; user-select:none; }
-    .nav-item:hover { background:rgba(255,255,255,0.07); color:#fff; }
-    .nav-item.active { background:rgba(91,175,214,0.18); color:#5bafd6; border-left-color:#5bafd6; }
-    .nav-item .icon { width:20px; text-align:center; font-size:16px; }
-    .sidebar-footer { padding:1rem 1.25rem; border-top:1px solid rgba(255,255,255,0.08); }
-    .user-bar { display:flex; align-items:center; gap:8px; }
-    .avatar { width:34px; height:34px; border-radius:50%; background:#2a5f7f; border:2px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#5bafd6; flex-shrink:0; }
-    .user-name { font-size:13px; font-weight:700; color:#fff; }
-    .user-role { font-size:11px; color:rgba(255,255,255,0.45); }
-    .logout-btn { margin-top:.75rem; width:100%; background:rgba(255,255,255,0.07); border:0.5px solid rgba(255,255,255,0.15); border-radius:8px; color:rgba(255,255,255,0.55); font-family:'Nunito',sans-serif; font-size:12px; font-weight:700; padding:.4rem; cursor:pointer; transition:.15s; }
-    .logout-btn:hover { background:rgba(255,255,255,0.14); color:#fff; }
-
-    /* MAIN */
-    .main { flex:1; margin-left:220px; display:flex; flex-direction:column; }
-    .topbar { background:var(--bg-topbar); border-bottom:1px solid var(--border); padding:.75rem 1.5rem; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:5; transition:background .3s, border-color .3s; }
-    .topbar-title { font-size:18px; font-weight:800; color:var(--text); flex:1; transition:color .3s; }
-    .topbar-badge { font-size:11px; font-weight:700; border-radius:20px; padding:3px 10px; }
-    .badge-user { background:var(--primary-light); color:var(--primary); }
-    .badge-adm  { background:#3a0e1e; color:#f094b4; }
-    body:not(.dark) .badge-adm { background:#fce8ef; color:#993556; }
-    .topbar-btn { background:var(--primary); color:#fff; border:none; border-radius:8px; padding:.45rem 1rem; font-size:13px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer; transition:.15s; }
-    .topbar-btn:hover { background:var(--primary-hover); }
-    .content { flex:1; padding:1.25rem 1.5rem; }
-
-    .dash-page { display:none; animation:fadeUp .25s ease; }
-    .dash-page.active { display:block; }
-
-    /* STAT CARDS */
-    .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:1.25rem; }
-    .stat-card { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; padding:1rem 1.25rem; display:flex; align-items:center; gap:12px; transition:background .3s, border-color .3s; }
-    .stat-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; transition:background .3s; }
-    .si-blue  { background:var(--primary-light); }
-    .si-green { background:#0a2e20; } body:not(.dark) .si-green { background:#e1f5ee; }
-    .si-amber { background:#2e1e00; } body:not(.dark) .si-amber { background:#fff4e0; }
-    .si-pink  { background:#2e0a1a; } body:not(.dark) .si-pink  { background:#fce8ef; }
-    .stat-label { font-size:12px; color:var(--muted); font-weight:600; transition:color .3s; }
-    .stat-val   { font-size:22px; font-weight:800; color:var(--text); transition:color .3s; }
-
-    /* TABLES */
-    .table-card { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:1.25rem; transition:background .3s, border-color .3s; }
-    .table-head { padding:.85rem 1.25rem; border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; transition:border-color .3s; }
-    .table-head h3 { font-size:14px; font-weight:800; color:var(--text); transition:color .3s; }
-    table { width:100%; border-collapse:collapse; }
-    th { font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; padding:.65rem 1.25rem; text-align:left; background:var(--th-bg); border-bottom:0.5px solid var(--border); transition:background .3s, color .3s; }
-    td { font-size:13px; padding:.7rem 1.25rem; border-bottom:0.5px solid var(--border); color:var(--text); transition:color .3s, border-color .3s; }
-    tr:last-child td { border-bottom:none; }
-    tr:hover td { background:var(--tr-hover); }
-
-    /* BADGES */
-    .badge { display:inline-block; font-size:11px; font-weight:700; border-radius:20px; padding:2px 9px; }
-    .b-vac { background:#0a2e20; color:#5dcaa5; } body:not(.dark) .b-vac { background:#e1f5ee; color:#0f6e56; }
-    .b-rem { background:#2e1e00; color:#fabd62; } body:not(.dark) .b-rem { background:#fff4e0; color:#b06000; }
-    .b-ok  { background:#0a2e20; color:#5dcaa5; } body:not(.dark) .b-ok  { background:#e1f5ee; color:#0f6e56; }
-    .b-pen { background:#2e2200; color:#facc6b; } body:not(.dark) .b-pen { background:#fef3cd; color:#856404; }
-    .b-err { background:#2e0a0a; color:#f09595; } body:not(.dark) .b-err { background:#fce8e8; color:#a32d2d; }
-
-    /* FORMS */
-    .form-section { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.25rem; transition:background .3s, border-color .3s; }
-    .form-section h3 { font-size:14px; font-weight:800; color:var(--text); margin-bottom:1rem; padding-bottom:.65rem; border-bottom:0.5px solid var(--border); transition:color .3s, border-color .3s; }
-    .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
-    .f { display:flex; flex-direction:column; gap:5px; }
-    .f label { font-size:12px; font-weight:700; color:var(--muted); transition:color .3s; }
-    .f input, .f select, .f textarea { border:0.5px solid var(--border); border-radius:8px; padding:.5rem .75rem; font-size:13px; font-family:'Nunito',sans-serif; color:var(--text); background:var(--bg-input); outline:none; transition:.15s; }
-    .f input:focus, .f select:focus, .f textarea:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--shadow-focus); background:var(--bg-input-foc); }
-    .f textarea { resize:vertical; min-height:70px; }
-    .span2 { grid-column:span 2; }
-
-    /* PETS */
-    .pets-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; margin-bottom:1.25rem; }
-    .pet-card { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; transition:background .3s, border-color .3s, box-shadow .15s; cursor:pointer; }
-    .pet-card:hover { box-shadow:0 4px 16px rgba(42,95,127,0.18); border-color:var(--primary-mid); }
-    .pet-card.selected { border-color:var(--primary); box-shadow:0 0 0 2px rgba(91,175,214,0.25); }
-    .pet-card.add-card { border:2px dashed var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:160px; }
-    .pet-avatar { width:56px; height:56px; border-radius:14px; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:.75rem; transition:background .3s; }
-    .pet-name  { font-size:16px; font-weight:800; color:var(--text); transition:color .3s; }
-    .pet-breed { font-size:12px; color:var(--muted); margin-bottom:.5rem; transition:color .3s; }
-    .pet-tags  { display:flex; flex-wrap:wrap; gap:5px; }
-    .pet-tag   { font-size:11px; font-weight:600; background:var(--primary-light); color:var(--primary); border-radius:20px; padding:2px 8px; transition:.3s; }
-    .empty-state { text-align:center; padding:3rem 1rem; color:var(--muted); }
-    .empty-state .big { font-size:48px; margin-bottom:1rem; }
-    .empty-state p { font-size:14px; font-weight:600; line-height:1.7; }
-
-    /* PRODUTOS */
-    .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-bottom:1.25rem; }
-    .product-card { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; transition:background .3s, border-color .3s, box-shadow .15s; }
-    .product-card:hover { box-shadow:0 4px 16px rgba(42,95,127,0.18); border-color:var(--primary-mid); }
-    .product-img { height:100px; background:var(--product-img); display:flex; align-items:center; justify-content:center; font-size:40px; transition:background .3s; }
-    .product-body { padding:.85rem 1rem; }
-    .product-name { font-size:13px; font-weight:800; color:var(--text); margin-bottom:3px; transition:color .3s; }
-    .product-desc { font-size:11px; color:var(--muted); margin-bottom:.6rem; transition:color .3s; }
-    .product-price { font-size:17px; font-weight:800; color:var(--primary); margin-bottom:.6rem; transition:color .3s; }
-    .btn-buy { width:100%; background:var(--primary); color:#fff; border:none; border-radius:7px; padding:.4rem; font-size:12px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer; transition:.15s; }
-    .btn-buy:hover { background:var(--primary-hover); }
-
-    /* BOTÕES */
-    .btn-sm      { background:var(--primary); color:#fff; border:none; border-radius:7px; padding:.4rem .9rem; font-size:12px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer; transition:.15s; }
-    .btn-sm:hover { background:var(--primary-hover); }
-    .btn-outline { background:transparent; color:var(--primary); border:0.5px solid var(--primary); border-radius:7px; padding:.4rem .9rem; font-size:12px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer; transition:.15s; }
-    .btn-outline:hover { background:var(--primary-light); }
-    .btn-danger  { background:#a32d2d; color:#fff; border:none; border-radius:7px; padding:.4rem .9rem; font-size:12px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer; transition:.15s; }
-    .btn-danger:hover { background:#7a1f1f; }
-
-    /* TIMELINE */
-    .timeline { padding:0 1.25rem 1.25rem; }
-    .tl-item { display:flex; gap:12px; padding:.75rem 0; border-bottom:0.5px solid var(--border); }
-    .tl-item:last-child { border-bottom:none; }
-    .tl-dot { width:10px; height:10px; border-radius:50%; margin-top:5px; flex-shrink:0; }
-    .tl-green{background:#1d9e75} .tl-blue{background:#2a5f7f} .tl-amber{background:#ef9f27}
-    .tl-label { font-size:13px; font-weight:700; color:var(--text); transition:color .3s; }
-    .tl-sub   { font-size:12px; color:var(--muted); transition:color .3s; }
-
-    /* COR PET */
-    .color-opts { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
-    .color-opt { width:28px; height:28px; border-radius:50%; border:2.5px solid transparent; cursor:pointer; transition:.15s; }
-    .color-opt.selected, .color-opt:hover { border-color:var(--primary); transform:scale(1.1); }
-
-    /* ADM */
-    .adm-banner { background:linear-gradient(135deg,#993556,#72243e); color:#fff; border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:12px; }
-    .adm-banner .adm-icon { font-size:28px; }
-    .adm-banner h3 { font-size:15px; font-weight:800; }
-    .adm-banner p  { font-size:12px; opacity:.8; }
-
-    /* MISC */
-    .sec-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:.85rem; }
-    .sec-hd h2 { font-size:16px; font-weight:800; color:var(--text); transition:color .3s; }
-    .ficha-header { display:flex; align-items:center; gap:14px; margin-bottom:1rem; padding-bottom:1rem; border-bottom:0.5px solid var(--border); }
-    .ficha-avatar { width:60px; height:60px; border-radius:14px; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:30px; flex-shrink:0; transition:background .3s; }
-    .ficha-nome { font-size:20px; font-weight:800; color:var(--text); transition:color .3s; }
-    .ficha-raca { font-size:13px; color:var(--muted); transition:color .3s; }
-
-    /* TOAST */
-    .toast { position:fixed; bottom:1.5rem; right:1.5rem; background:var(--toast-bg); color:#fff; border-radius:10px; padding:.75rem 1.25rem; font-size:13px; font-weight:700; display:none; z-index:9998; animation:fadeUp .3s ease; border:0.5px solid rgba(255,255,255,0.1); }
-    .toast.show { display:block; }
-
-    /* MODAL */
-    .modal-bg { display:none; position:fixed; inset:0; background:rgba(5,12,20,0.7); z-index:200; align-items:center; justify-content:center; }
-    .modal-bg.open { display:flex; }
-    .modal-box { background:var(--bg-card); border:0.5px solid var(--border); border-radius:16px; padding:1.5rem; width:90%; max-width:500px; animation:fadeUp .25s ease; max-height:90vh; overflow-y:auto; transition:background .3s, border-color .3s; }
-    .modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
-    .modal-head h3 { font-size:16px; font-weight:800; color:var(--text); transition:color .3s; }
-    .modal-close { border:none; background:none; font-size:22px; cursor:pointer; color:var(--muted); line-height:1; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VetZoone — Clínica Veterinária</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#2a5f7f;--primary-hover:#1f4f6a;--primary-light:#e8f3f9;--primary-mid:#5bafd6;
+  --text:#1a3f5c;--muted:#5a7f96;--border:#cddee8;--bg-page:#f0f6fa;--bg-card:#ffffff;
+  --bg-input:#f4f9fb;--bg-input-foc:#ffffff;--bg-sidebar:#1a3f5c;--bg-topbar:#ffffff;
+  --bg-login-card:rgba(255,255,255,0.97);--login-grad:linear-gradient(135deg,#2a5f7f 0%,#1a3f5c 100%);
+  --msg-ok-bg:#e1f5ee;--msg-ok-text:#0f6e56;--msg-err-bg:#fcebeb;--msg-err-text:#a32d2d;
+  --tr-hover:#f7fbfd;--th-bg:#f4f9fb;--shadow-focus:rgba(42,95,127,0.12);
+  --product-img:linear-gradient(135deg,#e8f3f9,#cee8f5);--toast-bg:#1a3f5c;
+}
+body.dark{
+  --primary:#5bafd6;--primary-hover:#3f9bc4;--primary-light:#0e2a3a;--primary-mid:#5bafd6;
+  --text:#cce3f0;--muted:#7aaec8;--border:#1e3d54;--bg-page:#0a1820;--bg-card:#0e2233;
+  --bg-input:#0c1e2e;--bg-input-foc:#112437;--bg-sidebar:#071016;--bg-topbar:#0e2233;
+  --bg-login-card:rgba(10,25,40,0.97);--login-grad:linear-gradient(135deg,#0f1e2a 0%,#071016 100%);
+  --msg-ok-bg:#0a2e20;--msg-ok-text:#5dcaa5;--msg-err-bg:#2e0a0a;--msg-err-text:#f09595;
+  --tr-hover:#0d2233;--th-bg:#0c1e2e;--shadow-focus:rgba(91,175,214,0.18);
+  --product-img:linear-gradient(135deg,#0e2233,#142d42);--toast-bg:#071016;
+}
+body{font-family:'Nunito',sans-serif;min-height:100vh;background:var(--login-grad);overflow-x:hidden;transition:background .3s;}
+#dark-toggle{position:fixed;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.12);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:9999;transition:.2s;backdrop-filter:blur(4px);}
+#dark-toggle:hover{background:rgba(255,255,255,0.25);}
+body.dark #dark-toggle{border-color:rgba(91,175,214,0.4);background:rgba(91,175,214,0.15);}
+ 
+/* ===== LOGIN ===== */
+#tela-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;}
+.login-card{background:var(--bg-login-card);border-radius:16px;padding:2rem 2.25rem;width:100%;max-width:420px;border:.5px solid rgba(255,255,255,0.15);animation:fadeUp .4s ease both;transition:background .3s;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:.35rem;justify-content:center;}
+.logo-icon{width:44px;height:44px;background:var(--primary);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;transition:background .3s;}
+.logo-text{font-size:28px;font-weight:800;color:var(--text);letter-spacing:-.5px;transition:color .3s;}
+.logo-text span{color:var(--primary);}
+.subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:1.5rem;transition:color .3s;}
+.tabs{display:flex;border-radius:10px;background:var(--bg-input);padding:4px;gap:4px;margin-bottom:1.5rem;transition:background .3s;}
+.tab-btn{flex:1;height:34px;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;background:transparent;color:var(--muted);transition:.2s;}
+.tab-btn.active{background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(42,95,127,0.25);}
+.page-form{display:none;animation:fadeUp .3s ease both;}
+.page-form.active{display:block;}
+.lrow{display:flex;gap:10px;}
+.lrow .lf{flex:1;}
+.lf{margin-bottom:.9rem;}
+.lf label{display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px;transition:color .3s;}
+.lf input,.lf select{width:100%;height:40px;border:.5px solid var(--border);border-radius:8px;padding:0 12px;font-size:14px;font-family:'Nunito',sans-serif;color:var(--text);background:var(--bg-input);outline:none;transition:.15s;appearance:none;}
+.lf input::placeholder{color:var(--muted);opacity:.7;}
+.lf input:focus,.lf select:focus{border-color:var(--primary);background:var(--bg-input-foc);box-shadow:0 0 0 3px var(--shadow-focus);}
+.lf input.invalid{border-color:#e24b4a!important;}
+.lf .field-hint{font-size:11px;color:var(--muted);margin-top:3px;}
+.lf .field-hint.err{color:#e24b4a;}
+.section-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:1rem 0 .5rem;}
+.divider-line{height:.5px;background:var(--border);margin-bottom:.9rem;}
+.forgot{text-align:right;font-size:12px;color:var(--primary);margin-top:-4px;margin-bottom:1.25rem;cursor:pointer;transition:color .3s;}
+.forgot:hover{text-decoration:underline;}
+.terms{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted);margin-bottom:1rem;line-height:1.5;}
+.terms input[type=checkbox]{margin-top:2px;accent-color:var(--primary);}
+.terms a{color:var(--primary);cursor:pointer;}
+.remember-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:1rem;}
+.remember-row input[type=checkbox]{accent-color:var(--primary);}
+.btn-primary{width:100%;height:44px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:.15s;margin-bottom:.75rem;}
+.btn-primary:hover{background:var(--primary-hover);}
+.btn-primary:active{transform:scale(.98);}
+.switch-link{text-align:center;font-size:13px;color:var(--muted);}
+.switch-link a{color:var(--primary);font-weight:700;cursor:pointer;}
+.switch-link a:hover{text-decoration:underline;}
+.lmsg{display:none;font-size:13px;border-radius:8px;padding:10px 14px;margin-bottom:1rem;text-align:center;font-weight:600;}
+.lmsg.ok{display:block;background:var(--msg-ok-bg);color:var(--msg-ok-text);}
+.lmsg.err{display:block;background:var(--msg-err-bg);color:var(--msg-err-text);}
+.footer-note{text-align:center;font-size:11px;color:var(--muted);margin-top:1.25rem;padding-top:1rem;border-top:.5px solid var(--border);}
+/* Login Veterinário / Funcionário */
+.vet-login-section{margin-top:.75rem;padding-top:.75rem;border-top:.5px solid var(--border);text-align:center;}
+.vet-login-link{font-size:12px;color:var(--muted);cursor:pointer;}
+.vet-login-link span{color:var(--primary);font-weight:700;}
+.vet-login-link:hover span{text-decoration:underline;}
+ 
+/* ===== DASHBOARD ===== */
+#tela-dashboard{display:none;min-height:100vh;background:var(--bg-page);transition:background .3s;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:220px;background:var(--bg-sidebar);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:10;transition:background .3s;}
+.sidebar-logo{padding:1.25rem 1.25rem 1rem;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.s-logo-icon{width:36px;height:36px;background:#2a5f7f;border:2px solid rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.s-logo-txt{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+.s-logo-txt span{color:#5bafd6;}
+.nav{flex:1;padding:.75rem 0;overflow-y:auto;}
+.nav-section{font-size:10px;font-weight:800;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.5px;padding:.5rem 1.25rem .25rem;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:.6rem 1.25rem;cursor:pointer;font-size:13.5px;font-weight:700;color:rgba(255,255,255,0.6);border-left:3px solid transparent;transition:.15s;user-select:none;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.nav-item.active{background:rgba(91,175,214,0.18);color:#5bafd6;border-left-color:#5bafd6;}
+.nav-item .icon{width:20px;text-align:center;font-size:16px;}
+.sidebar-footer{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.08);}
+.user-bar{display:flex;align-items:center;gap:8px;}
+.avatar{width:34px;height:34px;border-radius:50%;background:#2a5f7f;border:2px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#5bafd6;flex-shrink:0;}
+.user-name{font-size:13px;font-weight:700;color:#fff;}
+.user-role{font-size:11px;color:rgba(255,255,255,0.45);}
+.logout-btn{margin-top:.75rem;width:100%;background:rgba(255,255,255,0.07);border:.5px solid rgba(255,255,255,0.15);border-radius:8px;color:rgba(255,255,255,0.55);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;padding:.4rem;cursor:pointer;transition:.15s;}
+.logout-btn:hover{background:rgba(255,255,255,0.14);color:#fff;}
+.main{flex:1;margin-left:220px;display:flex;flex-direction:column;}
+.topbar{background:var(--bg-topbar);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5;transition:background .3s,border-color .3s;}
+.topbar-title{font-size:18px;font-weight:800;color:var(--text);flex:1;transition:color .3s;}
+.topbar-badge{font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;}
+.badge-user{background:var(--primary-light);color:var(--primary);}
+.badge-adm{background:#3a0e1e;color:#f094b4;}
+body:not(.dark) .badge-adm{background:#fce8ef;color:#993556;}
+.badge-vet{background:#0a2e20;color:#5dcaa5;}
+body:not(.dark) .badge-vet{background:#e1f5ee;color:#0f6e56;}
+.topbar-btn{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:.45rem 1rem;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:.15s;}
+.topbar-btn:hover{background:var(--primary-hover);}
+.content{flex:1;padding:1.25rem 1.5rem;}
+.dash-page{display:none;animation:fadeUp .25s ease;}
+.dash-page.active{display:block;}
+ 
+/* stat cards */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.25rem;}
+.stat-card{background:var(--bg-card);border:.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;transition:background .3s,border-color .3s;}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:background .3s;}
+.si-blue{background:var(--primary-light);}
+.si-green{background:#0a2e20;}body:not(.dark) .si-green{background:#e1f5ee;}
+.si-amber{background:#2e1e00;}body:not(.dark) .si-amber{background:#fff4e0;}
+.si-pink{background:#2e0a1a;}body:not(.dark) .si-pink{background:#fce8ef;}
+.stat-label{font-size:12px;color:var(--muted);font-weight:600;transition:color .3s;}
+.stat-val{font-size:22px;font-weight:800;color:var(--text);transition:color .3s;}
+ 
+/* tables */
+.table-card{background:var(--bg-card);border:.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.25rem;transition:background .3s,border-color .3s;}
+.table-head{padding:.85rem 1.25rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;transition:border-color .3s;}
+.table-head h3{font-size:14px;font-weight:800;color:var(--text);transition:color .3s;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:.65rem 1.25rem;text-align:left;background:var(--th-bg);border-bottom:.5px solid var(--border);transition:background .3s,color .3s;}
+td{font-size:13px;padding:.7rem 1.25rem;border-bottom:.5px solid var(--border);color:var(--text);transition:color .3s,border-color .3s;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--tr-hover);}
+.badge{display:inline-block;font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px;}
+.b-vac{background:#0a2e20;color:#5dcaa5;}body:not(.dark) .b-vac{background:#e1f5ee;color:#0f6e56;}
+.b-ok{background:#0a2e20;color:#5dcaa5;}body:not(.dark) .b-ok{background:#e1f5ee;color:#0f6e56;}
+.b-pen{background:#2e2200;color:#facc6b;}body:not(.dark) .b-pen{background:#fef3cd;color:#856404;}
+.b-err{background:#2e0a0a;color:#f09595;}body:not(.dark) .b-err{background:#fce8e8;color:#a32d2d;}
+.b-cancel{background:#2e0a0a;color:#f09595;}body:not(.dark) .b-cancel{background:#fce8e8;color:#a32d2d;}
+.b-sol{background:#0e1e3a;color:#7ab3e0;}body:not(.dark) .b-sol{background:#e0edff;color:#2a5faf;}
+ 
+/* forms */
+.form-section{background:var(--bg-card);border:.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;transition:background .3s,border-color .3s;}
+.form-section h3{font-size:14px;font-weight:800;color:var(--text);margin-bottom:1rem;padding-bottom:.65rem;border-bottom:.5px solid var(--border);transition:color .3s,border-color .3s;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
+.f{display:flex;flex-direction:column;gap:5px;}
+.f label{font-size:12px;font-weight:700;color:var(--muted);transition:color .3s;}
+.f input,.f select,.f textarea{border:.5px solid var(--border);border-radius:8px;padding:.5rem .75rem;font-size:13px;font-family:'Nunito',sans-serif;color:var(--text);background:var(--bg-input);outline:none;transition:.15s;}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--shadow-focus);background:var(--bg-input-foc);}
+.f textarea{resize:vertical;min-height:70px;}
+.f input.invalid,.f select.invalid{border-color:#e24b4a!important;}
+.span2{grid-column:span 2;}
+ 
+/* pets */
+.pets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:1.25rem;}
+.pet-card{background:var(--bg-card);border:.5px solid var(--border);border-radius:12px;padding:1.25rem;transition:background .3s,border-color .3s,box-shadow .15s;cursor:pointer;}
+.pet-card:hover{box-shadow:0 4px 16px rgba(42,95,127,0.18);border-color:var(--primary-mid);}
+.pet-card.selected{border-color:var(--primary);box-shadow:0 0 0 2px rgba(91,175,214,0.25);}
+.pet-card.add-card{border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;}
+.pet-avatar{width:56px;height:56px;border-radius:14px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:.75rem;transition:background .3s;}
+.pet-name{font-size:16px;font-weight:800;color:var(--text);transition:color .3s;}
+.pet-breed{font-size:12px;color:var(--muted);margin-bottom:.5rem;transition:color .3s;}
+.pet-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.pet-tag{font-size:11px;font-weight:600;background:var(--primary-light);color:var(--primary);border-radius:20px;padding:2px 8px;transition:.3s;}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty-state .big{font-size:48px;margin-bottom:1rem;}
+.empty-state p{font-size:14px;font-weight:600;line-height:1.7;}
+ 
+/* produtos / loja */
+.shop-bar{display:flex;gap:10px;align-items:center;margin-bottom:1rem;flex-wrap:wrap;}
+.shop-search{flex:1;min-width:180px;height:38px;border:.5px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;font-family:'Nunito',sans-serif;color:var(--text);background:var(--bg-input);outline:none;transition:.15s;}
+.shop-search:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--shadow-focus);background:var(--bg-input-foc);}
+.shop-filter{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-btn{padding:5px 12px;border-radius:20px;border:.5px solid var(--border);background:var(--bg-card);color:var(--muted);font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:.15s;}
+.filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.filter-btn:hover:not(.active){background:var(--primary-light);color:var(--primary);border-color:var(--primary);}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:1.25rem;}
+.product-card{background:var(--bg-card);border:.5px solid var(--border);border-radius:12px;overflow:hidden;transition:background .3s,border-color .3s,box-shadow .15s;}
+.product-card:hover{box-shadow:0 4px 16px rgba(42,95,127,0.18);border-color:var(--primary-mid);}
+.product-img{height:100px;background:var(--product-img);display:flex;align-items:center;justify-content:center;font-size:40px;transition:background .3s;}
+.product-body{padding:.85rem 1rem;}
+.product-name{font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;transition:color .3s;}
+.product-cat{font-size:10px;font-weight:700;border-radius:20px;padding:1px 7px;margin-bottom:4px;display:inline-block;}
+.product-desc{font-size:11px;color:var(--muted);margin-bottom:.6rem;transition:color .3s;}
+.product-price{font-size:17px;font-weight:800;color:var(--primary);margin-bottom:.6rem;transition:color .3s;}
+.btn-buy{width:100%;background:var(--primary);color:#fff;border:none;border-radius:7px;padding:.4rem;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:.15s;}
+.btn-buy:hover{background:var(--primary-hover);}
+.product-card.hidden{display:none;}
+ 
+/* botões */
+.btn-sm{background:var(--primary);color:#fff;border:none;border-radius:7px;padding:.4rem .9rem;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:.15s;}
+.btn-sm:hover{background:var(--primary-hover);}
+.btn-outline{background:transparent;color:var(--primary);border:.5px solid var(--primary);border-radius:7px;padding:.4rem .9rem;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:.15s;}
+.btn-outline:hover{background:var(--primary-light);}
+.btn-danger{background:#a32d2d;color:#fff;border:none;border-radius:7px;padding:.4rem .9rem;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:.15s;}
+.btn-danger:hover{background:#7a1f1f;}
+.btn-warn{background:#b06000;color:#fff;border:none;border-radius:7px;padding:.4rem .9rem;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:.15s;}
+.btn-warn:hover{background:#854800;}
+ 
+/* timeline */
+.timeline{padding:0 1.25rem 1.25rem;}
+.tl-item{display:flex;gap:12px;padding:.75rem 0;border-bottom:.5px solid var(--border);}
+.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.tl-green{background:#1d9e75}.tl-blue{background:#2a5f7f}.tl-amber{background:#ef9f27}
+.tl-label{font-size:13px;font-weight:700;color:var(--text);transition:color .3s;}
+.tl-sub{font-size:12px;color:var(--muted);transition:color .3s;}
+ 
+/* cor pet */
+.color-opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.color-opt{width:28px;height:28px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:.15s;}
+.color-opt.selected,.color-opt:hover{border-color:var(--primary);transform:scale(1.1);}
+ 
+/* ADM */
+.adm-banner{background:linear-gradient(135deg,#993556,#72243e);color:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px;}
+.adm-banner .adm-icon{font-size:28px;}
+.adm-banner h3{font-size:15px;font-weight:800;}
+.adm-banner p{font-size:12px;opacity:.8;}
+.vet-banner{background:linear-gradient(135deg,#1a6e4a,#0d3d2a);color:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px;}
+.vet-banner .adm-icon{font-size:28px;}
+.vet-banner h3{font-size:15px;font-weight:800;}
+.vet-banner p{font-size:12px;opacity:.8;}
+ 
+/* misc */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;}
+.sec-hd h2{font-size:16px;font-weight:800;color:var(--text);transition:color .3s;}
+.ficha-header{display:flex;align-items:center;gap:14px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:.5px solid var(--border);}
+.ficha-avatar{width:60px;height:60px;border-radius:14px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;transition:background .3s;}
+.ficha-nome{font-size:20px;font-weight:800;color:var(--text);transition:color .3s;}
+.ficha-raca{font-size:13px;color:var(--muted);transition:color .3s;}
+ 
+/* toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--toast-bg);color:#fff;border-radius:10px;padding:.75rem 1.25rem;font-size:13px;font-weight:700;display:none;z-index:9998;animation:fadeUp .3s ease;border:.5px solid rgba(255,255,255,0.1);max-width:340px;}
+.toast.show{display:block;}
+ 
+/* modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(5,12,20,0.7);z-index:200;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal-box{background:var(--bg-card);border:.5px solid var(--border);border-radius:16px;padding:1.5rem;width:90%;max-width:540px;animation:fadeUp .25s ease;max-height:90vh;overflow-y:auto;transition:background .3s,border-color .3s;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.modal-head h3{font-size:16px;font-weight:800;color:var(--text);transition:color .3s;}
+.modal-close{border:none;background:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
+ 
+/* aviso modal */
+.alert-box{border-radius:10px;padding:12px 14px;font-size:13px;font-weight:600;margin-bottom:1rem;line-height:1.5;}
+.alert-warn{background:#fff4e0;color:#b06000;}body.dark .alert-warn{background:#2e1e00;color:#fabd62;}
+.alert-info{background:#e8f3f9;color:#1f4f6a;}body.dark .alert-info{background:#0e2a3a;color:#7aaec8;}
+.alert-ok{background:#e1f5ee;color:#0f6e56;}body.dark .alert-ok{background:#0a2e20;color:#5dcaa5;}
+.alert-err{background:#fcebeb;color:#a32d2d;}body.dark .alert-err{background:#2e0a0a;color:#f09595;}
+ 
+/* perfil */
+.profile-section{background:var(--bg-card);border:.5px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;}
+.profile-avatar-big{width:80px;height:80px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:#fff;margin-bottom:1rem;}
+ 
+/* Consultas calendário */
+.time-slots{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.time-slot{padding:6px 12px;border-radius:8px;border:.5px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:.15s;background:var(--bg-input);color:var(--text);}
+.time-slot:hover:not(.disabled){background:var(--primary-light);border-color:var(--primary);color:var(--primary);}
+.time-slot.selected{background:var(--primary);color:#fff;border-color:var(--primary);}
+.time-slot.disabled{opacity:.4;cursor:not-allowed;text-decoration:line-through;}
+ 
+/* vacinação solicitação */
+.vac-request-card{background:var(--bg-card);border:.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:12px;}
+.vac-request-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+.vac-request-title{font-size:14px;font-weight:800;color:var(--text);}
+.vac-request-sub{font-size:12px;color:var(--muted);}
+ 
+/* ADM produtos form */
+.adm-prod-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
+.adm-prod-item{display:flex;align-items:center;gap:10px;background:var(--bg-input);border-radius:8px;padding:8px 12px;font-size:13px;}
+.adm-prod-item .prod-emoji{font-size:20px;}
+.adm-prod-item .prod-info{flex:1;}
+.adm-prod-item .prod-name{font-weight:700;color:var(--text);}
+.adm-prod-item .prod-meta{font-size:11px;color:var(--muted);}
+.adm-prod-item .btn-danger{padding:.3rem .7rem;font-size:11px;}
+ 
+/* ===== CARRINHO ===== */
+.cart-badge-nav{display:inline-flex;align-items:center;justify-content:center;background:#e24b4a;color:#fff;font-size:10px;font-weight:800;border-radius:20px;min-width:18px;height:18px;padding:0 5px;margin-left:4px;line-height:1;}
+.cart-item-row{display:flex;align-items:center;gap:12px;padding:.85rem 1.25rem;border-bottom:.5px solid var(--border);transition:background .15s;}
+.cart-item-row:last-child{border-bottom:none;}
+.cart-item-row:hover{background:var(--tr-hover);}
+.cart-item-emoji{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.cart-item-info{flex:1;min-width:0;}
+.cart-item-name{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cart-item-sub{font-size:11px;color:var(--muted);}
+.qty-wrap{display:flex;align-items:center;gap:6px;}
+.qty-btn{width:28px;height:28px;border-radius:7px;border:.5px solid var(--border);background:var(--bg-input);color:var(--text);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;font-family:'Nunito',sans-serif;line-height:1;}
+.qty-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary);}
+.qty-num{font-size:14px;font-weight:800;color:var(--text);min-width:22px;text-align:center;}
+.cart-item-price{font-size:14px;font-weight:800;color:var(--primary);white-space:nowrap;margin:0 8px;}
+.cart-summary-box{background:var(--bg-card);border:.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;}
+.cart-summary-box h3{font-size:14px;font-weight:800;color:var(--text);margin-bottom:1rem;padding-bottom:.65rem;border-bottom:.5px solid var(--border);}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:.5rem;}
+.sum-row.total{font-size:16px;font-weight:800;color:var(--text);padding-top:.65rem;margin-top:.25rem;border-top:.5px solid var(--border);}
+.sum-row.total span:last-child{color:var(--primary);}
+.cart-frete-info{font-size:12px;font-weight:700;background:var(--primary-light);color:var(--primary);border-radius:8px;padding:.5rem 1rem;margin-bottom:.85rem;text-align:center;}
+/* checkout steps */
+.ck-steps{display:flex;gap:0;border-radius:10px;overflow:hidden;border:.5px solid var(--border);margin-bottom:1.5rem;}
+.ck-step{flex:1;padding:.55rem;text-align:center;font-size:12px;font-weight:700;background:var(--bg-input);color:var(--muted);transition:.2s;}
+.ck-step.active{background:var(--primary);color:#fff;}
+.ck-step.done{background:var(--primary-hover);color:#fff;}
+.pay-method-tabs{display:flex;gap:8px;margin-bottom:1.25rem;}
+.pay-tab{flex:1;padding:.65rem .5rem;border-radius:10px;border:.5px solid var(--border);background:var(--bg-input);color:var(--muted);font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;transition:.15s;}
+.pay-tab:hover:not(.active){background:var(--primary-light);color:var(--primary);border-color:var(--primary);}
+.pay-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.card-visual{background:linear-gradient(135deg,#2a5f7f,#1a3f5c);border-radius:14px;padding:1.25rem 1.5rem;color:#fff;margin-bottom:1.25rem;position:relative;overflow:hidden;min-height:100px;}
+body.dark .card-visual{background:linear-gradient(135deg,#0e2233,#071016);}
+.card-visual::before{content:'';position:absolute;top:-25px;right:-25px;width:110px;height:110px;background:rgba(255,255,255,0.07);border-radius:50%;}
+.card-visual::after{content:'';position:absolute;bottom:-35px;left:10px;width:150px;height:150px;background:rgba(255,255,255,0.04);border-radius:50%;}
+.cv-chip{font-size:20px;margin-bottom:.75rem;}
+.cv-num{font-size:15px;font-weight:700;letter-spacing:2.5px;font-family:monospace;margin-bottom:.5rem;}
+.cv-bottom{display:flex;justify-content:space-between;font-size:11px;opacity:.8;}
+.cv-label{opacity:.6;font-size:9px;text-transform:uppercase;letter-spacing:1px;display:block;}
+.pix-area{text-align:center;background:var(--bg-input);border:.5px solid var(--border);border-radius:12px;padding:1.75rem 1rem;}
+.pix-icon{font-size:44px;margin-bottom:.75rem;}
+.pix-amount{font-size:24px;font-weight:800;color:var(--primary);margin-bottom:.5rem;}
+.pix-desc{font-size:13px;color:var(--muted);font-weight:600;line-height:1.6;margin-bottom:1rem;}
+.pix-key{display:inline-block;background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:700;padding:.4rem 1rem;border-radius:8px;}
+.review-block{background:var(--bg-input);border-radius:10px;padding:1rem;margin-bottom:.85rem;font-size:13px;color:var(--text);line-height:1.7;}
+.review-block strong{color:var(--primary);}
+.review-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;}
+.review-item-row{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:.5px solid var(--border);font-size:13px;}
+.review-item-row:last-child{border-bottom:none;}
+.success-wrap{text-align:center;padding:1rem 0;}
+.success-icon{font-size:56px;margin-bottom:1rem;}
+.success-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:.5rem;}
+.success-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:1.25rem;}
+.order-num{display:inline-block;background:var(--primary-light);color:var(--primary);font-size:15px;font-weight:800;letter-spacing:2px;padding:.5rem 1.25rem;border-radius:10px;margin-bottom:1.25rem;}
+</style>
 </head>
 <body>
-
-<!-- Botão modo escuro -->
 <button id="dark-toggle" onclick="toggleDark()" title="Alternar modo escuro">☀️</button>
-
-<!-- ============================================================ TELA LOGIN ============================================================ -->
+ 
+<!-- ===== TELA LOGIN ===== -->
 <div id="tela-login">
   <div class="login-card">
-    <div class="logo">
-      <div class="logo-icon">🐾</div>
-      <div class="logo-text">Vet<span>Zoone</span></div>
-    </div>
+    <div class="logo"><div class="logo-icon">🐾</div><div class="logo-text">Vet<span>Zoone</span></div></div>
     <p class="subtitle">Clínica Veterinária — Cuide do seu pet com amor</p>
     <div class="tabs">
-      <button class="tab-btn active" id="tab-login"    onclick="showForm('login')">Entrar</button>
-      <button class="tab-btn"        id="tab-cadastro" onclick="showForm('cadastro')">Criar conta</button>
+      <button class="tab-btn active" id="tab-login" onclick="showForm('login')">Entrar</button>
+      <button class="tab-btn" id="tab-cadastro" onclick="showForm('cadastro')">Criar conta</button>
     </div>
-
-    <!-- LOGIN -->
+ 
+    <!-- LOGIN TUTOR -->
     <div class="page-form active" id="form-login">
       <div id="msg-login" class="lmsg"></div>
-      <div class="lf"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"/></div>
-      <div class="lf"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••"/></div>
+      <div class="lf"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email"/></div>
+      <div class="lf"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password"/></div>
+      <div class="remember-row"><input type="checkbox" id="login-remember"/><label for="login-remember">Lembrar senha</label></div>
       <div class="forgot">Esqueci minha senha</div>
       <button class="btn-primary" onclick="handleLogin()">Entrar na conta</button>
       <div class="switch-link">Não tem conta? <a onclick="showForm('cadastro')">Criar agora</a></div>
+      <div class="vet-login-section">
+        <div class="vet-login-link" onclick="showForm('vet-login')">🩺 <span>Acesso para Veterinários / Funcionários</span></div>
+      </div>
     </div>
-
-    <!-- CADASTRO -->
+ 
+    <!-- LOGIN VETERINÁRIO -->
+    <div class="page-form" id="form-vet-login">
+      <div id="msg-vet-login" class="lmsg"></div>
+      <div class="alert-info" style="margin-bottom:1rem;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;">🩺 Área exclusiva para veterinários e funcionários cadastrados.</div>
+      <div class="lf"><label>E-mail profissional</label><input type="email" id="vet-login-email" placeholder="vet@vetzoone.com" autocomplete="email"/></div>
+      <div class="lf"><label>Senha</label><input type="password" id="vet-login-senha" placeholder="••••••••" autocomplete="current-password"/></div>
+      <div class="remember-row"><input type="checkbox" id="vet-login-remember"/><label for="vet-login-remember">Lembrar senha</label></div>
+      <button class="btn-primary" onclick="handleVetLogin()">Entrar como Profissional</button>
+      <div class="switch-link"><a onclick="showForm('login')">← Voltar para login de tutores</a></div>
+    </div>
+ 
+    <!-- CADASTRO TUTOR -->
     <div class="page-form" id="form-cadastro">
       <div id="msg-cadastro" class="lmsg"></div>
       <div class="section-label">Seus dados</div>
       <div class="lrow">
-        <div class="lf"><label>Nome</label><input type="text" id="c-nome" placeholder="João"/></div>
-        <div class="lf"><label>Sobrenome</label><input type="text" id="c-sobrenome" placeholder="Silva"/></div>
+        <div class="lf"><label>Nome *</label><input type="text" id="c-nome" placeholder="João"/></div>
+        <div class="lf"><label>Sobrenome *</label><input type="text" id="c-sobrenome" placeholder="Silva"/></div>
       </div>
-      <div class="lf"><label>E-mail</label><input type="email" id="c-email" placeholder="seu@email.com"/></div>
-      <div class="lf"><label>Telefone</label><input type="tel" id="c-telefone" placeholder="(11) 99999-9999"/></div>
-      <div class="lrow">
-        <div class="lf"><label>CPF *</label><input type="text" id="c-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)"/></div>
-        <div class="lf"><label>RG *</label><input type="text" id="c-rg" placeholder="00.000.000-0" maxlength="13"/></div>
+      <div class="lf">
+        <label>E-mail *</label>
+        <input type="email" id="c-email" placeholder="seu@email.com" oninput="validarEmailCadastro()"/>
+        <div class="field-hint" id="hint-email"></div>
+      </div>
+      <div class="lf">
+        <label>Telefone * <span style="font-weight:400;font-size:11px">(11–15 dígitos)</span></label>
+        <input type="tel" id="c-telefone" placeholder="(11) 99999-9999" maxlength="15" oninput="formatarTelefone(this)" onblur="validarTelefone()"/>
+        <div class="field-hint" id="hint-tel"></div>
+      </div>
+      <div class="lf">
+        <label>Segundo telefone <span style="font-weight:400;font-size:11px">(opcional)</span></label>
+        <input type="tel" id="c-telefone2" placeholder="(11) 98888-8888" maxlength="15" oninput="formatarTelefone(this)"/>
       </div>
       <div class="lrow">
-        <div class="lf"><label>Senha</label><input type="password" id="c-senha" placeholder="••••••••"/></div>
-        <div class="lf"><label>Confirmar senha</label><input type="password" id="c-senha2" placeholder="••••••••"/></div>
+        <div class="lf"><label>Senha *</label><input type="password" id="c-senha" placeholder="••••••••"/></div>
+        <div class="lf"><label>Confirmar senha *</label><input type="password" id="c-senha2" placeholder="••••••••"/></div>
       </div>
       <div class="section-label">Seu primeiro pet (opcional)</div>
       <div class="divider-line"></div>
@@ -372,18 +405,16 @@
           <select id="c-especie"><option value="">Selecione</option><option>Cachorro</option><option>Gato</option><option>Ave</option><option>Outro</option></select>
         </div>
       </div>
-      <div class="terms">
-        <input type="checkbox" id="termos"/>
-        <label for="termos">Li e aceito os <a>termos de uso</a> e a <a>política de privacidade</a> da VetZoone.</label>
-      </div>
+      <div class="terms"><input type="checkbox" id="termos"/><label for="termos">Li e aceito os <a>termos de uso</a> e a <a>política de privacidade</a> da VetZoone.</label></div>
       <button class="btn-primary" onclick="handleCadastro()">Criar minha conta</button>
       <div class="switch-link">Já tem conta? <a onclick="showForm('login')">Entrar</a></div>
     </div>
+ 
     <div class="footer-note">VetZoone — Clínica Veterinária · Todos os direitos reservados</div>
   </div>
 </div>
-
-<!-- ============================================================ DASHBOARD ============================================================ -->
+ 
+<!-- ===== DASHBOARD ===== -->
 <div id="tela-dashboard">
 <div class="app">
   <aside class="sidebar">
@@ -395,15 +426,11 @@
     <div class="sidebar-footer">
       <div class="user-bar">
         <div class="avatar" id="dash-avatar">?</div>
-        <div>
-          <div class="user-name" id="dash-nome">—</div>
-          <div class="user-role" id="dash-role">Tutor</div>
-        </div>
+        <div><div class="user-name" id="dash-nome">—</div><div class="user-role" id="dash-role">Tutor</div></div>
       </div>
       <button class="logout-btn" onclick="fazerLogout()">⟵ Sair da conta</button>
     </div>
   </aside>
-
   <div class="main">
     <div class="topbar">
       <div class="topbar-title" id="topbar-title">Início</div>
@@ -411,7 +438,7 @@
       <button class="topbar-btn" id="topbar-btn" onclick="topbarAction()" style="display:none"></button>
     </div>
     <div class="content">
-
+ 
       <!-- INÍCIO -->
       <div class="dash-page active" id="page-inicio">
         <div class="cards-grid" id="inicio-cards"></div>
@@ -424,14 +451,20 @@
           <div class="timeline" id="inicio-historico"></div>
         </div>
       </div>
-
+ 
+      <!-- PERFIL -->
+      <div class="dash-page" id="page-perfil">
+        <div class="sec-hd"><h2>Meu perfil</h2></div>
+        <div id="perfil-container"></div>
+      </div>
+ 
       <!-- MEUS PETS -->
       <div class="dash-page" id="page-pets">
         <div class="sec-hd"><h2>Meus animais</h2><button class="btn-sm" onclick="abrirModalPet()">+ Cadastrar pet</button></div>
         <div class="pets-grid" id="pets-grid"></div>
         <div id="ficha-pet-container"></div>
       </div>
-
+ 
       <!-- VACINAÇÃO -->
       <div class="dash-page" id="page-vacinacao">
         <div class="sec-hd"><h2>Vacinação</h2></div>
@@ -440,47 +473,77 @@
           <div class="table-head"><h3>Carteira de vacinação</h3></div>
           <div id="vac-table-container"></div>
         </div>
+        <!-- Solicitações enviadas -->
         <div class="form-section">
-          <h3>Registrar nova vacinação</h3>
-          <div class="form-grid">
-            <div class="f"><label>Pet</label><select id="vac-pet-sel"></select></div>
-            <div class="f"><label>Vacina</label><input id="vac-nome" placeholder="ex.: V10 Polivalente"/></div>
-            <div class="f"><label>Data de aplicação</label><input type="date" id="vac-data"/></div>
-            <div class="f"><label>Próxima dose</label><input type="date" id="vac-prox"/></div>
-            <div class="f"><label>Veterinário</label><input id="vac-vet" placeholder="Nome do veterinário"/></div>
-            <div class="f"><label>Lote</label><input id="vac-lote" placeholder="ex.: AB12345"/></div>
-            <div class="f span2"><label>Observações</label><textarea id="vac-obs" placeholder="Reações, notas..."></textarea></div>
-          </div>
-          <div style="margin-top:1rem"><button class="btn-sm" onclick="salvarVacina()">Salvar registro</button></div>
+          <h3>📋 Minhas solicitações de vacinação</h3>
+          <div id="vac-solicitacoes-container"></div>
         </div>
-      </div>
-
-      <!-- REMÉDIOS -->
-      <div class="dash-page" id="page-remedios">
-        <div class="sec-hd"><h2>Remédios</h2></div>
-        <div class="table-card">
-          <div class="table-head"><h3>Tratamentos</h3></div>
-          <div id="rem-table-container"></div>
-        </div>
+        <!-- Solicitar vacinação -->
         <div class="form-section">
-          <h3>Adicionar medicamento</h3>
+          <h3>💉 Solicitar nova vacinação</h3>
+          <div class="alert-info" style="border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;margin-bottom:1rem;">ℹ️ Preencha a solicitação abaixo. O veterinário escolhido registrará as informações completas da vacina.</div>
           <div class="form-grid">
-            <div class="f"><label>Pet</label><select id="rem-pet-sel"></select></div>
-            <div class="f"><label>Medicamento</label><input id="rem-nome" placeholder="Nome do remédio"/></div>
-            <div class="f"><label>Dosagem</label><input id="rem-dose" placeholder="ex.: 1 comprimido"/></div>
-            <div class="f"><label>Frequência</label>
-              <select id="rem-freq"><option>1x ao dia</option><option>2x ao dia</option><option>3x ao dia</option><option>Semanal</option><option>Mensal</option><option>Dose única</option></select>
+            <div class="f"><label>Pet *</label><select id="vac-pet-sel"></select></div>
+            <div class="f"><label>Vacina desejada *</label>
+              <select id="vac-tipo-sel">
+                <option value="">Selecione</option>
+                <option>V10 Polivalente</option><option>Antirrábica</option><option>Gripe (Bordetella)</option>
+                <option>Giárdia</option><option>Leishmaniose</option><option>FeLV (Leucemia Felina)</option>
+                <option>Quádrupla Felina</option><option>Outra</option>
+              </select>
             </div>
-            <div class="f"><label>Início</label><input type="date" id="rem-inicio"/></div>
-            <div class="f"><label>Término</label><input type="date" id="rem-fim"/></div>
-            <div class="f"><label>Veterinário</label><input id="rem-vet" placeholder="Quem prescreveu"/></div>
-            <div class="f"><label>Contínuo?</label><select id="rem-cont"><option>Não</option><option>Sim</option></select></div>
-            <div class="f span2"><label>Observações</label><textarea id="rem-obs" placeholder="Administrar com alimento, etc."></textarea></div>
+            <div class="f"><label>Veterinário *</label><select id="vac-vet-sel"></select></div>
+            <div class="f"><label>Data preferida *</label><input type="date" id="vac-data-pref"/></div>
+            <div class="f span2"><label>Observações / histórico</label><textarea id="vac-obs-sol" placeholder="Informe reações anteriores, alergias, etc."></textarea></div>
           </div>
-          <div style="margin-top:1rem"><button class="btn-sm" onclick="salvarRemedio()">Salvar</button></div>
+          <div style="margin-top:1rem"><button class="btn-sm" onclick="solicitarVacina()">Enviar solicitação</button></div>
         </div>
       </div>
-
+ 
+      <!-- PRODUTOS / REMÉDIOS (loja unificada) -->
+      <div class="dash-page" id="page-produtos">
+        <div class="sec-hd"><h2>Produtos & Medicamentos</h2><span style="background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px">Loja VetZoone</span></div>
+        <div class="shop-bar">
+          <input class="shop-search" type="text" id="shop-search" placeholder="🔍 Buscar produto ou medicamento..." oninput="filtrarProdutos()"/>
+          <button class="topbar-btn" id="topbar-cart-btn" onclick="irCarrinho()" style="font-size:12px">🛒 Carrinho (<span id="cart-count">0</span>)</button>
+        </div>
+        <div class="shop-filter" id="shop-filter-btns"></div>
+        <div style="height:12px"></div>
+        <div class="products-grid" id="products-grid"></div>
+        <div id="products-empty" style="display:none;text-align:center;padding:2rem;color:var(--muted);font-size:13px">Nenhum produto encontrado.</div>
+      </div>
+ 
+      <!-- CARRINHO -->
+      <div class="dash-page" id="page-carrinho">
+        <div class="sec-hd">
+          <h2>🛒 Meu Carrinho</h2>
+          <button class="btn-outline" onclick="irLoja()">← Continuar comprando</button>
+        </div>
+        <div id="cart-vazio" style="display:none;text-align:center;padding:3rem 1rem">
+          <div style="font-size:52px;margin-bottom:1rem">🛒</div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:.5rem">Seu carrinho está vazio</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:1.5rem">Adicione produtos da loja para continuar.</div>
+          <button class="btn-sm" onclick="irLoja()">Ver produtos</button>
+        </div>
+        <div id="cart-conteudo">
+          <div class="table-card" style="margin-bottom:1.25rem">
+            <div class="table-head">
+              <h3>Itens no carrinho</h3>
+              <button class="btn-danger" style="font-size:11px;padding:.3rem .7rem" onclick="limparCarrinho()">🗑️ Esvaziar</button>
+            </div>
+            <div id="cart-lista"></div>
+          </div>
+          <div class="cart-summary-box">
+            <h3>Resumo do pedido</h3>
+            <div id="cart-frete-banner" class="cart-frete-info" style="display:none"></div>
+            <div class="sum-row"><span>Subtotal</span><span id="sum-subtotal">R$ 0,00</span></div>
+            <div class="sum-row"><span>Frete</span><span id="sum-frete">A calcular</span></div>
+            <div class="sum-row total"><span>Total</span><span id="sum-total">R$ 0,00</span></div>
+            <button class="btn-primary" style="margin-top:1rem;margin-bottom:0" onclick="abrirCheckout()">Finalizar compra →</button>
+          </div>
+        </div>
+      </div>
+ 
       <!-- CONSULTAS -->
       <div class="dash-page" id="page-consultas">
         <div class="sec-hd"><h2>Consultas</h2></div>
@@ -490,124 +553,103 @@
           <div id="cons-table-container"></div>
         </div>
         <div class="form-section">
-          <h3>Agendar nova consulta</h3>
+          <h3>📅 Agendar nova consulta</h3>
           <div class="form-grid">
-            <div class="f"><label>Pet</label><select id="cons-pet-sel"></select></div>
-            <div class="f"><label>Tipo</label>
+            <div class="f"><label>Pet *</label><select id="cons-pet-sel"></select></div>
+            <div class="f"><label>Tipo *</label>
               <select id="cons-tipo"><option>Rotina</option><option>Urgência</option><option>Retorno</option><option>Exame</option><option>Cirurgia</option></select>
             </div>
-            <div class="f"><label>Data desejada</label><input type="date" id="cons-data"/></div>
-            <div class="f"><label>Horário</label>
-              <select id="cons-hora"><option>08:00</option><option>09:00</option><option>10:00</option><option>14:00</option><option>15:00</option><option>16:00</option></select>
-            </div>
-            <div class="f"><label>Veterinário</label>
-              <select id="cons-vet"><option>Dr. Marcos Souza</option><option>Dra. Carla Mendes</option><option>Sem preferência</option></select>
-            </div>
-            <div class="f span2"><label>Motivo / sintomas</label><textarea id="cons-motivo" placeholder="Descreva o motivo..."></textarea></div>
+            <div class="f"><label>Veterinário *</label><select id="cons-vet"></select></div>
+            <div class="f"><label>Data *</label><input type="date" id="cons-data" onchange="atualizarHorarios()"/></div>
           </div>
+          <div class="f" style="margin-top:12px"><label>Horário disponível *</label>
+            <div class="time-slots" id="time-slots-container"></div>
+            <input type="hidden" id="cons-hora-sel"/>
+          </div>
+          <div class="f" style="margin-top:12px"><label>Motivo / sintomas</label><textarea id="cons-motivo" placeholder="Descreva o motivo..."></textarea></div>
           <div style="margin-top:1rem"><button class="btn-sm" onclick="salvarConsulta()">Confirmar agendamento</button></div>
         </div>
       </div>
-
-      <!-- PRODUTOS -->
-      <div class="dash-page" id="page-produtos">
-        <div class="sec-hd"><h2>Produtos</h2><span style="background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px">Loja VetZoone</span></div>
-        <div class="products-grid">
-          <div class="product-card"><div class="product-img">🦴</div><div class="product-body"><div class="product-name">Ração Premium Adulto</div><div class="product-desc">Golden / Labrador · 15kg</div><div class="product-price">R$ 189,90</div><button class="btn-buy" onclick="adicionarAoCarrinho({id:'p1',nome:'Ração Premium Adulto',preco:189.90,emoji:'🦴'})">Adicionar ao carrinho</button></div></div>
-          <div class="product-card"><div class="product-img">🐟</div><div class="product-body"><div class="product-name">Suplemento Ômega-3</div><div class="product-desc">Caps 60un · pele e pelagem</div><div class="product-price">R$ 54,90</div><button class="btn-buy" onclick="adicionarAoCarrinho({id:'p2',nome:'Suplemento Ômega-3',preco:54.90,emoji:'🐟'})">Adicionar ao carrinho</button></div></div>
-          <div class="product-card"><div class="product-img">🧴</div><div class="product-body"><div class="product-name">Shampoo Veterinário</div><div class="product-desc">500ml · pele sensível</div><div class="product-price">R$ 38,50</div><button class="btn-buy" onclick="adicionarAoCarrinho({id:'p3',nome:'Shampoo Veterinário',preco:38.50,emoji:'🧴'})">Adicionar ao carrinho</button></div></div>
-          <div class="product-card"><div class="product-img">💊</div><div class="product-body"><div class="product-name">Antipulgas Frontline</div><div class="product-desc">Pipeta · cães 10–20kg</div><div class="product-price">R$ 89,90</div><button class="btn-buy" onclick="adicionarAoCarrinho({id:'p4',nome:'Antipulgas Frontline',preco:89.90,emoji:'💊'})">Adicionar ao carrinho</button></div></div>
-          <div class="product-card"><div class="product-img">🪮</div><div class="product-body"><div class="product-name">Escova FurMinator</div><div class="product-desc">Reduz pelagem solta 90%</div><div class="product-price">R$ 129,00</div><button class="btn-buy" onclick="adicionarAoCarrinho({id:'p5',nome:'Escova FurMinator',preco:129.00,emoji:'🪮'})">Adicionar ao carrinho</button></div></div>
-          <div class="product-card"><div class="product-img">🛏️</div><div class="product-body"><div class="product-name">Cama Pet Comfort</div><div class="product-desc">Tamanho G · lavável</div><div class="product-price">R$ 149,90</div><button class="btn-buy" onclick="adicionarAoCarrinho({id:'p6',nome:'Cama Pet Comfort',preco:149.90,emoji:'🛏️'})">Adicionar ao carrinho</button></div></div>
-        </div>
-      </div>
-
-      <!-- CARRINHO -->
-      <div class="dash-page" id="page-carrinho">
-        <div class="sec-hd"><h2>🛒 Carrinho de Compras</h2><button class="btn-outline" onclick="goto('produtos', document.querySelector('.nav-item[onclick*=produtos]'))">← Continuar comprando</button></div>
-        <div id="carrinho-vazio" style="display:none" class="empty-state"><div class="big">🛒</div><p>Seu carrinho está vazio.<br>Adicione produtos da loja!</p></div>
-        <div id="carrinho-conteudo">
-          <div class="table-card" id="carrinho-itens-wrap">
-            <div class="table-head"><h3>Itens no carrinho</h3></div>
-            <div id="carrinho-itens"></div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
-            <!-- CARTÕES -->
-            <div class="form-section">
-              <h3>💳 Pagamento</h3>
-              <div id="cartoes-lista" style="margin-bottom:1rem"></div>
-              <div style="margin-bottom:.75rem;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Adicionar novo cartão</div>
-              <div class="form-grid">
-                <div class="f span2"><label>Número do cartão</label><input id="card-num" placeholder="0000 0000 0000 0000" maxlength="19" oninput="fmtCard(this)"/></div>
-                <div class="f span2"><label>Nome no cartão</label><input id="card-nome" placeholder="NOME COMO NO CARTÃO"/></div>
-                <div class="f"><label>Validade</label><input id="card-val" placeholder="MM/AA" maxlength="5" oninput="fmtValidade(this)"/></div>
-                <div class="f"><label>CVV</label><input id="card-cvv" placeholder="123" maxlength="4" type="password"/></div>
-                <div class="f span2"><label>Bandeira</label>
-                  <select id="card-band">
-                    <option value="">Selecione</option>
-                    <option>Visa</option><option>Mastercard</option><option>Elo</option><option>American Express</option><option>Hipercard</option>
-                  </select>
-                </div>
-              </div>
-              <div style="margin-top:1rem"><button class="btn-sm" onclick="salvarCartao()">+ Salvar cartão</button></div>
-            </div>
-            <!-- RESUMO -->
-            <div class="form-section" style="position:sticky;top:80px">
-              <h3>Resumo do pedido</h3>
-              <div id="resumo-itens" style="margin-bottom:1rem;font-size:13px;color:var(--text)"></div>
-              <div style="border-top:0.5px solid var(--border);padding-top:.75rem;margin-bottom:.75rem">
-                <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:.3rem"><span>Subtotal</span><span id="resumo-sub">R$ 0,00</span></div>
-                <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:.3rem"><span>Frete</span><span style="color:#1d9e75">Grátis</span></div>
-                <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--text);margin-top:.5rem"><span>Total</span><span id="resumo-total" style="color:var(--primary)">R$ 0,00</span></div>
-              </div>
-              <div style="margin-bottom:.75rem;font-size:12px;font-weight:700;color:var(--muted)">Pagar com:</div>
-              <div id="select-cartao-pay" style="margin-bottom:1rem;font-size:13px;color:var(--muted)">Nenhum cartão salvo</div>
-              <button class="btn-primary" onclick="finalizarCompra()" style="margin-bottom:0">Finalizar pedido</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ADM: USUÁRIOS -->
+ 
+      <!-- ADM: TUTORES -->
       <div class="dash-page" id="page-adm-usuarios">
         <div class="adm-banner"><div class="adm-icon">🛡️</div><div><h3>Painel Administrativo</h3><p>Todos os tutores cadastrados no sistema</p></div></div>
         <div class="cards-grid" id="adm-cards"></div>
         <div class="table-card"><div class="table-head"><h3>Tutores cadastrados</h3></div><div id="adm-usuarios-table"></div></div>
       </div>
-
+ 
       <!-- ADM: PETS -->
       <div class="dash-page" id="page-adm-pets">
         <div class="adm-banner"><div class="adm-icon">🐾</div><div><h3>Todos os Animais</h3><p>Animais registrados de todos os tutores</p></div></div>
         <div class="table-card"><div class="table-head"><h3>Animais no sistema</h3></div><div id="adm-pets-table"></div></div>
       </div>
-
+ 
       <!-- ADM: VACINAS -->
       <div class="dash-page" id="page-adm-vacinas">
-        <div class="adm-banner"><div class="adm-icon">💉</div><div><h3>Todas as Vacinações</h3><p>Registros de todos os animais</p></div></div>
-        <div class="table-card"><div class="table-head"><h3>Carteira geral</h3></div><div id="adm-vacinas-table"></div></div>
+        <div class="adm-banner"><div class="adm-icon">💉</div><div><h3>Todas as Vacinações</h3><p>Registros e solicitações de todos os animais</p></div></div>
+        <div class="table-card"><div class="table-head"><h3>Solicitações pendentes</h3></div><div id="adm-vacinas-pend-table"></div></div>
+        <div class="table-card"><div class="table-head"><h3>Vacinações registradas</h3></div><div id="adm-vacinas-table"></div></div>
       </div>
-
+ 
       <!-- ADM: CONSULTAS -->
       <div class="dash-page" id="page-adm-consultas">
         <div class="adm-banner"><div class="adm-icon">📅</div><div><h3>Todas as Consultas</h3><p>Agenda completa da clínica</p></div></div>
         <div class="table-card"><div class="table-head"><h3>Agenda geral</h3></div><div id="adm-consultas-table"></div></div>
       </div>
-
+ 
+      <!-- ADM: VETERINÁRIOS -->
+      <div class="dash-page" id="page-adm-vets">
+        <div class="adm-banner"><div class="adm-icon">🩺</div><div><h3>Veterinários & Funcionários</h3><p>Gerenciar profissionais da clínica</p></div></div>
+        <div class="table-card"><div class="table-head"><h3>Profissionais cadastrados</h3><button class="btn-sm" onclick="abrirModalAdmVet()">+ Adicionar</button></div><div id="adm-vets-table"></div></div>
+      </div>
+ 
+      <!-- ADM: PRODUTOS -->
+      <div class="dash-page" id="page-adm-produtos">
+        <div class="adm-banner"><div class="adm-icon">🛒</div><div><h3>Gerenciar Produtos</h3><p>Adicionar e remover itens da loja</p></div></div>
+        <div class="form-section">
+          <h3>Adicionar novo produto</h3>
+          <div class="form-grid">
+            <div class="f"><label>Nome *</label><input id="adm-prod-nome" placeholder="Nome do produto"/></div>
+            <div class="f"><label>Categoria *</label>
+              <select id="adm-prod-cat">
+                <option value="">Selecione</option>
+                <option>Rações</option><option>Petiscos</option><option>Medicamentos</option>
+                <option>Higiene e Limpeza</option><option>Brinquedos</option><option>Acessórios</option>
+                <option>Comedouros e Bebedouros</option><option>Areia Sanitária</option><option>Aquarismo</option>
+                <option>Antipulgas e Carrapatos</option><option>Shampoos e Cosméticos</option>
+                <option>Arranhadores</option><option>Viveiros e Gaiolas</option>
+                <option>Higiene Bucal</option><option>Tapetes Higiênicos</option>
+              </select>
+            </div>
+            <div class="f"><label>Descrição</label><input id="adm-prod-desc" placeholder="ex.: 15kg · adulto"/></div>
+            <div class="f"><label>Preço (R$) *</label><input type="number" id="adm-prod-preco" placeholder="0.00" step="0.01" min="0"/></div>
+            <div class="f"><label>Emoji / ícone</label><input id="adm-prod-emoji" placeholder="ex.: 🦴" maxlength="4"/></div>
+          </div>
+          <div style="margin-top:1rem"><button class="btn-sm" onclick="adicionarProdutoAdm()">Adicionar produto</button></div>
+        </div>
+        <div class="table-card"><div class="table-head"><h3>Produtos cadastrados</h3></div><div id="adm-prod-list-container"></div></div>
+      </div>
+ 
+      <!-- VET: PAINEL -->
+      <div class="dash-page" id="page-vet-painel">
+        <div class="vet-banner"><div class="adm-icon">🩺</div><div><h3 id="vet-painel-title">Painel do Veterinário</h3><p>Suas consultas e solicitações de vacinação</p></div></div>
+        <div class="cards-grid" id="vet-cards"></div>
+        <div class="table-card"><div class="table-head"><h3>Minhas consultas agendadas</h3></div><div id="vet-consultas-table"></div></div>
+        <div class="table-card"><div class="table-head"><h3>Solicitações de vacinação pendentes</h3></div><div id="vet-vac-pend-table"></div></div>
+      </div>
+ 
     </div><!-- /content -->
   </div><!-- /main -->
 </div><!-- /app -->
 </div><!-- /tela-dashboard -->
-
+ 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
+ 
 <!-- MODAL NOVO PET -->
 <div class="modal-bg" id="modal-pet">
   <div class="modal-box">
-    <div class="modal-head">
-      <h3>🐾 Cadastrar novo pet</h3>
-      <button class="modal-close" onclick="fecharModal('modal-pet')">×</button>
-    </div>
+    <div class="modal-head"><h3>🐾 Cadastrar novo pet</h3><button class="modal-close" onclick="fecharModal('modal-pet')">×</button></div>
     <div class="form-grid">
       <div class="f"><label>Nome do pet *</label><input id="np-nome" placeholder="ex.: Thor"/></div>
       <div class="f"><label>Espécie *</label>
@@ -620,8 +662,7 @@
       <div class="f"><label>Porte</label><select id="np-porte"><option>Pequeno</option><option>Médio</option><option>Grande</option></select></div>
       <div class="f"><label>Castrado?</label><select id="np-cast"><option>Não</option><option>Sim</option></select></div>
       <div class="f"><label>Microchip</label><input id="np-chip" placeholder="Número (opcional)"/></div>
-      <div class="f">
-        <label>Cor / pelagem</label>
+      <div class="f"><label>Cor / pelagem</label>
         <div class="color-opts" id="np-cores">
           <div class="color-opt" style="background:#d4a853" data-cor="Dourado" title="Dourado"></div>
           <div class="color-opt" style="background:#c0a080" data-cor="Caramelo" title="Caramelo"></div>
@@ -641,252 +682,478 @@
     </div>
   </div>
 </div>
-
+ 
+<!-- MODAL CONFIRMAÇÃO CONSULTA -->
+<div class="modal-bg" id="modal-cons-confirm">
+  <div class="modal-box">
+    <div class="modal-head"><h3>✅ Consulta confirmada!</h3><button class="modal-close" onclick="fecharModal('modal-cons-confirm')">×</button></div>
+    <div class="alert-ok" id="cons-confirm-msg"></div>
+    <div class="alert-warn">⚠️ <strong>Política de cancelamento:</strong> O cancelamento gratuito é permitido até <strong>3 dias antes</strong> da data da consulta. Após esse prazo, será cobrada uma <strong>taxa de cancelamento</strong>.</div>
+    <div style="margin-top:1rem"><button class="btn-sm" onclick="fecharModal('modal-cons-confirm')">Entendido</button></div>
+  </div>
+</div>
+ 
+<!-- MODAL CANCELAR CONSULTA -->
+<div class="modal-bg" id="modal-cancelar-cons">
+  <div class="modal-box">
+    <div class="modal-head"><h3>❌ Cancelar consulta</h3><button class="modal-close" onclick="fecharModal('modal-cancelar-cons')">×</button></div>
+    <div id="cancel-cons-msg"></div>
+    <input type="hidden" id="cancel-cons-id"/>
+    <div style="margin-top:1rem;display:flex;gap:8px">
+      <button class="btn-danger" onclick="confirmarCancelamento()">Confirmar cancelamento</button>
+      <button class="btn-outline" onclick="fecharModal('modal-cancelar-cons')">Voltar</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- MODAL VACINA VET (preencher detalhes) -->
+<div class="modal-bg" id="modal-vac-vet">
+  <div class="modal-box">
+    <div class="modal-head"><h3>💉 Registrar vacinação</h3><button class="modal-close" onclick="fecharModal('modal-vac-vet')">×</button></div>
+    <div class="alert-info" id="vac-vet-req-info" style="border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;margin-bottom:1rem;"></div>
+    <input type="hidden" id="vac-vet-req-id"/>
+    <div class="form-grid">
+      <div class="f"><label>Vacina aplicada *</label><input id="vv-nome" placeholder="ex.: V10 Polivalente"/></div>
+      <div class="f"><label>Data de aplicação *</label><input type="date" id="vv-data"/></div>
+      <div class="f"><label>Próxima dose</label><input type="date" id="vv-prox"/></div>
+      <div class="f"><label>Lote</label><input id="vv-lote" placeholder="ex.: AB12345"/></div>
+      <div class="f span2"><label>Observações</label><textarea id="vv-obs" placeholder="Reações, notas..."></textarea></div>
+    </div>
+    <div style="margin-top:1rem;display:flex;gap:8px">
+      <button class="btn-sm" onclick="registrarVacinaVet()">Confirmar registro</button>
+      <button class="btn-outline" onclick="fecharModal('modal-vac-vet')">Cancelar</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- MODAL ADM VETERINÁRIO -->
+<div class="modal-bg" id="modal-adm-vet">
+  <div class="modal-box">
+    <div class="modal-head"><h3>🩺 Adicionar Veterinário / Funcionário</h3><button class="modal-close" onclick="fecharModal('modal-adm-vet')">×</button></div>
+    <div id="msg-adm-vet" class="lmsg"></div>
+    <div class="form-grid">
+      <div class="f"><label>Nome completo *</label><input id="av-nome" placeholder="Dr. Marcos Souza"/></div>
+      <div class="f"><label>Cargo *</label>
+        <select id="av-cargo"><option>Veterinário</option><option>Recepcionista</option><option>Auxiliar</option><option>Groomer</option></select>
+      </div>
+      <div class="f"><label>E-mail *</label><input type="email" id="av-email" placeholder="vet@vetzoone.com"/></div>
+      <div class="f"><label>Senha *</label><input type="password" id="av-senha" placeholder="••••••••"/></div>
+      <div class="f"><label>CRMV</label><input id="av-crmv" placeholder="ex.: 12345-SP"/></div>
+      <div class="f"><label>Especialidade</label><input id="av-espec" placeholder="ex.: Clínica Geral"/></div>
+    </div>
+    <div style="margin-top:1rem;display:flex;gap:8px">
+      <button class="btn-sm" onclick="salvarVetAdm()">Cadastrar profissional</button>
+      <button class="btn-outline" onclick="fecharModal('modal-adm-vet')">Cancelar</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- MODAL EXCLUIR CONTA -->
+<div class="modal-bg" id="modal-excluir-conta">
+  <div class="modal-box">
+    <div class="modal-head"><h3>⚠️ Excluir conta</h3><button class="modal-close" onclick="fecharModal('modal-excluir-conta')">×</button></div>
+    <div class="alert-err" style="border-radius:8px;padding:12px 14px;font-size:13px;font-weight:600;margin-bottom:1rem;">Esta ação é <strong>irreversível</strong>. Todos os seus dados, pets, vacinas e consultas serão permanentemente removidos.</div>
+    <div class="f" style="margin-bottom:1rem"><label>Digite sua senha para confirmar:</label><input type="password" id="excluir-senha" placeholder="••••••••"/></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-danger" onclick="confirmarExclusaoConta()">Excluir permanentemente</button>
+      <button class="btn-outline" onclick="fecharModal('modal-excluir-conta')">Cancelar</button>
+    </div>
+  </div>
+</div>
+ 
 <script>
-// ============================================================
-// MODO ESCURO
-// ============================================================
+// ===== MODO ESCURO =====
 let darkMode = localStorage.getItem('pz_dark') === '1';
-
 function aplicarDark() {
   document.body.classList.toggle('dark', darkMode);
   document.getElementById('dark-toggle').textContent = darkMode ? '🌙' : '☀️';
 }
-
-function toggleDark() {
-  darkMode = !darkMode;
-  localStorage.setItem('pz_dark', darkMode ? '1' : '0');
-  aplicarDark();
-}
-
-aplicarDark(); // aplica na carga
-
-// ============================================================
-// BANCO DE DADOS (localStorage)
-// ============================================================
-const ADM_EMAILS = ['isabellacastro2018@gmail.com', 'daniel.silva120dani@gmail.com', 'isabela2802aguiar@gmail.com'];
-
+function toggleDark() { darkMode = !darkMode; localStorage.setItem('pz_dark', darkMode?'1':'0'); aplicarDark(); }
+aplicarDark();
+ 
+// ===== DB =====
+const ADM_EMAILS = ['isabellacastro2018@gmail.com','daniel.silva120dani@gmail.com','isabela2802aguiar@gmail.com'];
+ 
+const PRODUTOS_DEFAULT = [
+  {id:'pd1',nome:'Ração Premium Adulto',categoria:'Rações',desc:'Golden/Labrador · 15kg',preco:189.90,emoji:'🦴'},
+  {id:'pd2',nome:'Ração Filhote Mini',categoria:'Rações',desc:'Raças pequenas · 3kg',preco:79.90,emoji:'🦴'},
+  {id:'pd3',nome:'Petisco Natural Frango',categoria:'Petiscos',desc:'100g · desidratado',preco:24.90,emoji:'🍗'},
+  {id:'pd4',nome:'Petisco Ossinho Dental',categoria:'Petiscos',desc:'Pack 12 unidades',preco:34.90,emoji:'🦷'},
+  {id:'pd5',nome:'Frontline Antipulgas',categoria:'Antipulgas e Carrapatos',desc:'Pipeta · cães 10-20kg',preco:89.90,emoji:'🪲'},
+  {id:'pd6',nome:'Vermífugo Caniverm',categoria:'Medicamentos',desc:'Comprimidos · 4 unid.',preco:42.00,emoji:'💊'},
+  {id:'pd7',nome:'Antibiótico Amoxi-Vet',categoria:'Medicamentos',desc:'500mg · 14 comprimidos',preco:68.50,emoji:'💊'},
+  {id:'pd8',nome:'Anti-inflamatório Previcox',categoria:'Medicamentos',desc:'57mg · 10 comprimidos',preco:95.00,emoji:'💊'},
+  {id:'pd9',nome:'Shampoo Veterinário',categoria:'Shampoos e Cosméticos',desc:'500ml · pele sensível',preco:38.50,emoji:'🧴'},
+  {id:'pd10',nome:'Condicionador PetSmooth',categoria:'Shampoos e Cosméticos',desc:'300ml · brilho e maciez',preco:32.00,emoji:'🧴'},
+  {id:'pd11',nome:'Lenços Umedecidos Pet',categoria:'Higiene e Limpeza',desc:'Pack 50 unidades',preco:19.90,emoji:'🧻'},
+  {id:'pd12',nome:'Tapete Higiênico 80x60',categoria:'Tapetes Higiênicos',desc:'Pack 30 unidades',preco:55.00,emoji:'📦'},
+  {id:'pd13',nome:'Areia Sanitária Premium',categoria:'Areia Sanitária',desc:'4kg · grãos finos',preco:39.90,emoji:'🪣'},
+  {id:'pd14',nome:'Comedouro Inox P',categoria:'Comedouros e Bebedouros',desc:'400ml · antiderrapante',preco:28.90,emoji:'🥣'},
+  {id:'pd15',nome:'Bebedouro Automático',categoria:'Comedouros e Bebedouros',desc:'1,5L · com filtro',preco:79.90,emoji:'💧'},
+  {id:'pd16',nome:'Brinquedo Kong Classic',categoria:'Brinquedos',desc:'Borracha natural · M',preco:59.90,emoji:'🎾'},
+  {id:'pd17',nome:'Varinha com Pena',categoria:'Brinquedos',desc:'Para gatos · sortida',preco:18.90,emoji:'🪄'},
+  {id:'pd18',nome:'Coleira Ajustável M',categoria:'Acessórios',desc:'Nylon · 1,5cm · colorida',preco:24.90,emoji:'🦮'},
+  {id:'pd19',nome:'Guia Retratil 5m',categoria:'Acessórios',desc:'Até 20kg · travas automáticas',preco:64.90,emoji:'📎'},
+  {id:'pd20',nome:'Arranhador Sisal Torre',categoria:'Arranhadores',desc:'60cm · base estável',preco:89.90,emoji:'🌀'},
+  {id:'pd21',nome:'Gaiola Hamster Deluxe',categoria:'Viveiros e Gaiolas',desc:'Com roda e acessórios',preco:149.90,emoji:'🏠'},
+  {id:'pd22',nome:'Aquário 20L Completo',categoria:'Aquarismo',desc:'Com filtro e iluminação LED',preco:219.90,emoji:'🐠'},
+  {id:'pd23',nome:'Escova Dental + Pasta',categoria:'Higiene Bucal',desc:'Kit completo para pets',preco:26.90,emoji:'🦷'},
+  {id:'pd24',nome:'Suplemento Ômega-3',categoria:'Medicamentos',desc:'Caps 60un · pele e pelagem',preco:54.90,emoji:'🐟'},
+];
+ 
 function getDB() {
-  try { return JSON.parse(localStorage.getItem('pz_db') || 'null') || {usuarios:[],pets:[],vacinas:[],remedios:[],consultas:[]}; }
-  catch(e) { return {usuarios:[],pets:[],vacinas:[],remedios:[],consultas:[]}; }
+  try { return JSON.parse(localStorage.getItem('pz_db')||'null')||{usuarios:[],pets:[],vacinas:[],remedios:[],consultas:[],vacs_sol:[],veterinarios:[],produtos:PRODUTOS_DEFAULT}; }
+  catch(e){ return {usuarios:[],pets:[],vacinas:[],remedios:[],consultas:[],vacs_sol:[],veterinarios:[],produtos:PRODUTOS_DEFAULT}; }
 }
-function saveDB(db) { localStorage.setItem('pz_db', JSON.stringify(db)); }
-
-let eu = null;
-let petAtual = null;
-let corNovoPet = '';
-let paginaAtual = 'inicio';
-
-// ============================================================
-// LOGIN / CADASTRO
-// ============================================================
-function showForm(tab) {
-  document.getElementById('form-login').classList.toggle('active', tab==='login');
-  document.getElementById('form-cadastro').classList.toggle('active', tab==='cadastro');
-  document.getElementById('tab-login').classList.toggle('active', tab==='login');
-  document.getElementById('tab-cadastro').classList.toggle('active', tab==='cadastro');
-  ['msg-login','msg-cadastro'].forEach(id=>{ const e=document.getElementById(id); e.className='lmsg'; e.textContent=''; });
+function saveDB(db){ localStorage.setItem('pz_db',JSON.stringify(db)); }
+function getDBProdutos(db){ return db.produtos && db.produtos.length ? db.produtos : PRODUTOS_DEFAULT; }
+ 
+// Garantir produtos no DB ao iniciar
+(function(){const db=getDB();if(!db.produtos||!db.produtos.length){db.produtos=PRODUTOS_DEFAULT;saveDB(db);}})();
+ 
+let eu = null, petAtual = null, corNovoPet = '', paginaAtual = 'inicio', cartCount = 0;
+let filtroCategoria = 'Todos';
+ 
+// ===== VALIDAÇÃO =====
+function validarEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()); }
+function validarEmailCadastro(){
+  const el=document.getElementById('c-email'), hint=document.getElementById('hint-email');
+  if(el.value && !validarEmail(el.value)){ hint.textContent='E-mail inválido.'; hint.className='field-hint err'; }
+  else{ hint.textContent=''; hint.className='field-hint'; }
 }
-
-function lmsg(id, txt, tipo) { const e=document.getElementById(id); e.textContent=txt; e.className='lmsg '+tipo; }
-
-function handleLogin() {
+function formatarTelefone(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>11) v=v.slice(0,11);
+  if(v.length>6) v=v.replace(/^(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+  else if(v.length>2) v=v.replace(/^(\d{2})(\d{0,5})/,'($1) $2');
+  el.value=v;
+}
+function validarTelefone(){
+  const el=document.getElementById('c-telefone'), hint=document.getElementById('hint-tel');
+  const nums=el.value.replace(/\D/g,'');
+  if(el.value && (nums.length<11||nums.length>15)){ hint.textContent='Telefone deve ter entre 11 e 15 dígitos.'; hint.className='field-hint err'; return false; }
+  hint.textContent=''; hint.className='field-hint'; return true;
+}
+ 
+// ===== LOGIN =====
+function showForm(tab){
+  ['login','cadastro','vet-login'].forEach(f=>{
+    const el=document.getElementById('form-'+f);
+    if(el) el.classList.toggle('active',f===tab);
+  });
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-cadastro').classList.toggle('active',tab==='cadastro');
+  ['msg-login','msg-cadastro','msg-vet-login'].forEach(id=>{ const e=document.getElementById(id); if(e){e.className='lmsg';e.textContent='';} });
+}
+function lmsg(id,txt,tipo){ const e=document.getElementById(id); if(e){e.textContent=txt;e.className='lmsg '+tipo;} }
+ 
+// Carregar senha salva
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=localStorage.getItem('pz_saved_login');
+  if(saved){ try{ const d=JSON.parse(saved); document.getElementById('login-email').value=d.email||''; document.getElementById('login-senha').value=d.senha||''; document.getElementById('login-remember').checked=true; }catch(e){} }
+  const savedVet=localStorage.getItem('pz_saved_vet_login');
+  if(savedVet){ try{ const d=JSON.parse(savedVet); document.getElementById('vet-login-email').value=d.email||''; document.getElementById('vet-login-senha').value=d.senha||''; document.getElementById('vet-login-remember').checked=true; }catch(e){} }
+  // Restaurar sessão
+  const sess=sessionStorage.getItem('pz_session');
+  if(sess){ try{ eu=JSON.parse(sess); entrarDashboard(true); }catch(e){} }
+});
+ 
+function handleLogin(){
   const eEl=document.getElementById('login-email'), sEl=document.getElementById('login-senha');
   [eEl,sEl].forEach(el=>el.classList.remove('invalid'));
-  if(!eEl.value.trim()) eEl.classList.add('invalid');
-  if(!sEl.value.trim()) sEl.classList.add('invalid');
-  if(!eEl.value.trim()||!sEl.value.trim()){ lmsg('msg-login','Preencha e-mail e senha.','err'); return; }
-
-  const email = eEl.value.trim().toLowerCase();
-
-  if(ADM_EMAILS.includes(email)) {
-    const partes = email.split('@')[0].replace(/[._]/g,' ').split(' ');
-    const nomeAdm = partes.map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
-    eu = { id:'adm_'+email, nome:nomeAdm, email, isAdm:true };
-    lmsg('msg-login','Acesso ADM confirmado! Entrando... 🛡️','ok');
-    setTimeout(entrarDashboard, 800);
-    return;
+  if(!eEl.value.trim()||!sEl.value.trim()){
+    if(!eEl.value.trim()) eEl.classList.add('invalid');
+    if(!sEl.value.trim()) sEl.classList.add('invalid');
+    lmsg('msg-login','Preencha e-mail e senha.','err'); return;
   }
-
-  const db = getDB();
-  const user = db.usuarios.find(u=>u.email===email && u.senha===sEl.value);
+  if(!validarEmail(eEl.value)){ eEl.classList.add('invalid'); lmsg('msg-login','E-mail inválido.','err'); return; }
+  if(document.getElementById('login-remember').checked){
+    localStorage.setItem('pz_saved_login',JSON.stringify({email:eEl.value.trim(),senha:sEl.value}));
+  } else { localStorage.removeItem('pz_saved_login'); }
+  const email=eEl.value.trim().toLowerCase();
+  if(ADM_EMAILS.includes(email)){
+    const partes=email.split('@')[0].replace(/[._]/g,' ').split(' ');
+    const nomeAdm=partes.map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+    eu={id:'adm_'+email,nome:nomeAdm,email,isAdm:true,tipo:'adm'};
+    lmsg('msg-login','Acesso ADM confirmado! Entrando... 🛡️','ok');
+    setTimeout(()=>entrarDashboard(),800); return;
+  }
+  const db=getDB();
+  const user=db.usuarios.find(u=>u.email===email&&u.senha===sEl.value);
   if(!user){ lmsg('msg-login','E-mail ou senha incorretos.','err'); return; }
-  eu = {...user, isAdm:false};
+  eu={...user,isAdm:false,tipo:'tutor'};
   lmsg('msg-login','Login realizado! Entrando... 🐾','ok');
-  setTimeout(entrarDashboard, 800);
+  setTimeout(()=>entrarDashboard(),800);
 }
-
-function handleCadastro() {
-  const nome=document.getElementById('c-nome'), sobre=document.getElementById('c-sobrenome'),
-        email=document.getElementById('c-email'), senha=document.getElementById('c-senha'),
-        senha2=document.getElementById('c-senha2'), termos=document.getElementById('termos'),
-        cpf=document.getElementById('c-cpf'), rg=document.getElementById('c-rg');
-  [nome,email,senha,senha2,cpf,rg].forEach(el=>el.classList.remove('invalid'));
+ 
+function handleVetLogin(){
+  const eEl=document.getElementById('vet-login-email'), sEl=document.getElementById('vet-login-senha');
+  if(!eEl.value.trim()||!sEl.value.trim()){ lmsg('msg-vet-login','Preencha todos os campos.','err'); return; }
+  if(!validarEmail(eEl.value)){ lmsg('msg-vet-login','E-mail inválido.','err'); return; }
+  if(document.getElementById('vet-login-remember').checked){
+    localStorage.setItem('pz_saved_vet_login',JSON.stringify({email:eEl.value.trim(),senha:sEl.value}));
+  } else { localStorage.removeItem('pz_saved_vet_login'); }
+  const email=eEl.value.trim().toLowerCase();
+  const db=getDB();
+  const vet=db.veterinarios&&db.veterinarios.find(v=>v.email===email&&v.senha===sEl.value);
+  if(!vet){ lmsg('msg-vet-login','Credenciais inválidas.','err'); return; }
+  eu={...vet,isAdm:false,tipo:'vet'};
+  lmsg('msg-vet-login','Bem-vindo! Entrando... 🩺','ok');
+  setTimeout(()=>entrarDashboard(),800);
+}
+ 
+function handleCadastro(){
+  const nome=document.getElementById('c-nome'),sobre=document.getElementById('c-sobrenome'),
+        email=document.getElementById('c-email'),tel=document.getElementById('c-telefone'),
+        senha=document.getElementById('c-senha'),senha2=document.getElementById('c-senha2'),
+        termos=document.getElementById('termos');
+  [nome,email,senha,senha2,tel].forEach(el=>el.classList.remove('invalid'));
   let ok=true;
-  [nome,email,senha,senha2,cpf,rg].forEach(el=>{ if(!el.value.trim()){el.classList.add('invalid');ok=false;} });
+  [nome,email,senha,senha2].forEach(el=>{ if(!el.value.trim()){el.classList.add('invalid');ok=false;} });
   if(!ok){ lmsg('msg-cadastro','Preencha todos os campos obrigatórios.','err'); return; }
-  if(!validarCPF(cpf.value)){ cpf.classList.add('invalid'); lmsg('msg-cadastro','CPF inválido. Verifique o número.','err'); return; }
+  if(!validarEmail(email.value)){ email.classList.add('invalid'); lmsg('msg-cadastro','E-mail inválido.','err'); return; }
+  const telNums=tel.value.replace(/\D/g,'');
+  if(!tel.value.trim()||telNums.length<11||telNums.length>15){ tel.classList.add('invalid'); lmsg('msg-cadastro','Telefone inválido (11–15 dígitos).','err'); return; }
   if(senha.value!==senha2.value){ senha.classList.add('invalid'); senha2.classList.add('invalid'); lmsg('msg-cadastro','As senhas não coincidem.','err'); return; }
   if(!termos.checked){ lmsg('msg-cadastro','Aceite os termos para continuar.','err'); return; }
-
-  const emailVal = email.value.trim().toLowerCase();
+  const emailVal=email.value.trim().toLowerCase();
   if(ADM_EMAILS.includes(emailVal)){ lmsg('msg-cadastro','Este e-mail não pode ser cadastrado.','err'); return; }
-
-  const db = getDB();
+  const db=getDB();
   if(db.usuarios.find(u=>u.email===emailVal)){ lmsg('msg-cadastro','E-mail já cadastrado. Faça login.','err'); return; }
-
-  const novoUser = { id:'u_'+Date.now(), nome:(nome.value.trim()+' '+sobre.value.trim()).trim(), email:emailVal, senha:senha.value, cpf:cpf.value.trim(), rg:rg.value.trim(), isAdm:false };
+  const novoUser={id:'u_'+Date.now(),nome:(nome.value.trim()+' '+sobre.value.trim()).trim(),email:emailVal,senha:senha.value,telefone:tel.value,telefone2:document.getElementById('c-telefone2').value,isAdm:false,tipo:'tutor'};
   db.usuarios.push(novoUser);
-
-  const petNome=document.getElementById('c-pet').value.trim();
-  const especie=document.getElementById('c-especie').value;
-  if(petNome && especie) {
-    db.pets.push({ id:'p_'+Date.now(), userId:novoUser.id, nome:petNome, especie, raca:'', sexo:'Macho', nasc:'', peso:'', porte:'Médio', castrado:'Não', chip:'', cor:'', obs:'' });
-  }
-  saveDB(db);
-  eu = {...novoUser};
+  const petNome=document.getElementById('c-pet').value.trim(), especie=document.getElementById('c-especie').value;
+  if(petNome&&especie) db.pets.push({id:'p_'+Date.now(),userId:novoUser.id,nome:petNome,especie,raca:'',sexo:'Macho',nasc:'',peso:'',porte:'Médio',castrado:'Não',chip:'',cor:'',obs:''});
+  saveDB(db); eu={...novoUser};
   lmsg('msg-cadastro','Conta criada! Entrando... 🐾','ok');
-  setTimeout(entrarDashboard, 800);
+  setTimeout(()=>entrarDashboard(),800);
 }
-
-// ============================================================
-// ENTRAR DASHBOARD
-// ============================================================
-function entrarDashboard() {
+ 
+// ===== DASHBOARD =====
+function entrarDashboard(fromSession=false){
+  sessionStorage.setItem('pz_session',JSON.stringify(eu));
   document.getElementById('tela-login').style.display='none';
   document.getElementById('tela-dashboard').style.display='block';
-  document.body.style.background = darkMode ? '#0a1820' : '#f0f6fa';
-
-  const iniciais = eu.nome.split(' ').filter(Boolean).map(p=>p[0]).slice(0,2).join('').toUpperCase();
-  document.getElementById('dash-avatar').textContent = iniciais;
-  document.getElementById('dash-nome').textContent   = eu.nome;
-  document.getElementById('dash-role').textContent   = eu.isAdm ? 'Administrador' : 'Tutor';
-
-  const badge = document.getElementById('topbar-badge');
-  badge.textContent = eu.isAdm ? 'Administrador' : 'Tutor';
-  badge.className = 'topbar-badge ' + (eu.isAdm ? 'badge-adm' : 'badge-user');
-
-  const nav = document.getElementById('sidebar-nav');
-  nav.innerHTML = eu.isAdm ? `
-    <div class="nav-section">Painel ADM</div>
-    <div class="nav-item active" onclick="goto('adm-usuarios',this)"><span class="icon">👥</span> Todos os tutores</div>
-    <div class="nav-item" onclick="goto('adm-pets',this)"><span class="icon">🐾</span> Todos os animais</div>
-    <div class="nav-item" onclick="goto('adm-vacinas',this)"><span class="icon">💉</span> Todas as vacinas</div>
-    <div class="nav-item" onclick="goto('adm-consultas',this)"><span class="icon">📅</span> Todas as consultas</div>
-    <div class="nav-section">Loja</div>
-    <div class="nav-item" onclick="goto('produtos',this)"><span class="icon">🛒</span> Produtos</div>
-    <div class="nav-item" onclick="goto('carrinho',this)"><span class="icon">🛍️</span> Carrinho <span id="cart-badge" style="display:none;background:#e24b4a;color:#fff;border-radius:20px;font-size:10px;padding:1px 6px;margin-left:4px">0</span></div>
-  ` : `
-    <div class="nav-section">Principal</div>
-    <div class="nav-item active" onclick="goto('inicio',this)"><span class="icon">🏠</span> Início</div>
-    <div class="nav-section">Meus Pets</div>
-    <div class="nav-item" onclick="goto('pets',this)"><span class="icon">🐶</span> Meus animais</div>
-    <div class="nav-section">Saúde</div>
-    <div class="nav-item" onclick="goto('vacinacao',this)"><span class="icon">💉</span> Vacinação</div>
-    <div class="nav-item" onclick="goto('remedios',this)"><span class="icon">💊</span> Remédios</div>
-    <div class="nav-item" onclick="goto('consultas',this)"><span class="icon">📅</span> Consultas</div>
-    <div class="nav-section">Loja</div>
-    <div class="nav-item" onclick="goto('produtos',this)"><span class="icon">🛒</span> Produtos</div>
-    <div class="nav-item" onclick="goto('carrinho',this)"><span class="icon">🛍️</span> Carrinho <span id="cart-badge" style="display:none;background:#e24b4a;color:#fff;border-radius:20px;font-size:10px;padding:1px 6px;margin-left:4px">0</span></div>
-  `;
-
-  goto(eu.isAdm ? 'adm-usuarios' : 'inicio', nav.querySelector('.nav-item'));
+  document.body.style.background=darkMode?'#0a1820':'#f0f6fa';
+  const iniciais=eu.nome.split(' ').filter(Boolean).map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('dash-avatar').textContent=iniciais;
+  document.getElementById('dash-nome').textContent=eu.nome;
+  const roleLabel=eu.tipo==='adm'?'Administrador':eu.tipo==='vet'?(eu.cargo||'Veterinário'):'Tutor';
+  document.getElementById('dash-role').textContent=roleLabel;
+  const badge=document.getElementById('topbar-badge');
+  badge.textContent=roleLabel;
+  badge.className='topbar-badge '+(eu.tipo==='adm'?'badge-adm':eu.tipo==='vet'?'badge-vet':'badge-user');
+  const nav=document.getElementById('sidebar-nav');
+  if(eu.tipo==='adm'){
+    nav.innerHTML=`
+      <div class="nav-section">Painel ADM</div>
+      <div class="nav-item active" onclick="goto('adm-usuarios',this)"><span class="icon">👥</span> Tutores</div>
+      <div class="nav-item" onclick="goto('adm-pets',this)"><span class="icon">🐾</span> Animais</div>
+      <div class="nav-item" onclick="goto('adm-vacinas',this)"><span class="icon">💉</span> Vacinações</div>
+      <div class="nav-item" onclick="goto('adm-consultas',this)"><span class="icon">📅</span> Consultas</div>
+      <div class="nav-item" onclick="goto('adm-vets',this)"><span class="icon">🩺</span> Veterinários</div>
+      <div class="nav-section">Loja</div>
+      <div class="nav-item" onclick="goto('adm-produtos',this)"><span class="icon">🛒</span> Gerenciar Produtos</div>
+      <div class="nav-item" onclick="goto('produtos',this)"><span class="icon">🏪</span> Ver Loja</div>
+      <div class="nav-item" id="nav-carrinho" onclick="goto('carrinho',this)"><span class="icon">🛍️</span> Carrinho <span class="cart-badge-nav" id="nav-cart-badge" style="display:none">0</span></div>
+      <div class="nav-section">Conta</div>
+      <div class="nav-item" onclick="goto('perfil',this)"><span class="icon">👤</span> Perfil</div>`;
+  } else if(eu.tipo==='vet'){
+    nav.innerHTML=`
+      <div class="nav-section">Painel do Profissional</div>
+      <div class="nav-item active" onclick="goto('vet-painel',this)"><span class="icon">🩺</span> Meu Painel</div>
+      <div class="nav-section">Conta</div>
+      <div class="nav-item" onclick="goto('perfil',this)"><span class="icon">👤</span> Perfil</div>`;
+  } else {
+    nav.innerHTML=`
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" onclick="goto('inicio',this)"><span class="icon">🏠</span> Início</div>
+      <div class="nav-section">Meus Pets</div>
+      <div class="nav-item" onclick="goto('pets',this)"><span class="icon">🐶</span> Meus animais</div>
+      <div class="nav-section">Saúde</div>
+      <div class="nav-item" onclick="goto('vacinacao',this)"><span class="icon">💉</span> Vacinação</div>
+      <div class="nav-item" onclick="goto('consultas',this)"><span class="icon">📅</span> Consultas</div>
+      <div class="nav-section">Loja</div>
+      <div class="nav-item" onclick="goto('produtos',this)"><span class="icon">🛒</span> Produtos</div>
+      <div class="nav-item" id="nav-carrinho" onclick="goto('carrinho',this)"><span class="icon">🛍️</span> Carrinho <span class="cart-badge-nav" id="nav-cart-badge" style="display:none">0</span></div>
+      <div class="nav-section">Conta</div>
+      <div class="nav-item" onclick="goto('perfil',this)"><span class="icon">👤</span> Perfil</div>`;
+  }
+  const initPage=eu.tipo==='adm'?'adm-usuarios':eu.tipo==='vet'?'vet-painel':'inicio';
+  goto(initPage, nav.querySelector('.nav-item'));
 }
-
-// ============================================================
-// NAVEGAÇÃO
-// ============================================================
-const cfgPages = {
-  inicio:          { title:'Início',             btn:'+ Novo pet',     show:true  },
-  pets:            { title:'Meus animais',        btn:'+ Cadastrar pet',show:true  },
-  vacinacao:       { title:'Vacinação',           btn:'',               show:false },
-  remedios:        { title:'Remédios',            btn:'',               show:false },
-  consultas:       { title:'Consultas',           btn:'',               show:false },
-  produtos:        { title:'Produtos',            btn:'🛒 Ver carrinho', show:true  },
-  carrinho:        { title:'Carrinho',            btn:'',               show:false },
-  'adm-usuarios':  { title:'Todos os tutores',    btn:'',               show:false },
-  'adm-pets':      { title:'Todos os animais',    btn:'',               show:false },
-  'adm-vacinas':   { title:'Todas as vacinações', btn:'',               show:false },
-  'adm-consultas': { title:'Todas as consultas',  btn:'',               show:false },
+ 
+// ===== NAVEGAÇÃO =====
+const cfgPages={
+  inicio:{title:'Início',btn:'+ Novo pet',show:true},
+  perfil:{title:'Meu perfil',btn:'',show:false},
+  pets:{title:'Meus animais',btn:'+ Cadastrar pet',show:true},
+  vacinacao:{title:'Vacinação',btn:'',show:false},
+  consultas:{title:'Consultas',btn:'',show:false},
+  produtos:{title:'Produtos & Medicamentos',btn:'',show:false},
+  carrinho:{title:'Meu Carrinho 🛒',btn:'',show:false},
+  'adm-usuarios':{title:'Todos os tutores',btn:'',show:false},
+  'adm-pets':{title:'Todos os animais',btn:'',show:false},
+  'adm-vacinas':{title:'Vacinações',btn:'',show:false},
+  'adm-consultas':{title:'Todas as consultas',btn:'',show:false},
+  'adm-vets':{title:'Veterinários & Funcionários',btn:'',show:false},
+  'adm-produtos':{title:'Gerenciar Produtos',btn:'',show:false},
+  'vet-painel':{title:'Meu Painel',btn:'',show:false},
 };
-
-function goto(id, el) {
+function goto(id,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
   document.querySelectorAll('.dash-page').forEach(p=>p.classList.remove('active'));
-  const pg = document.getElementById('page-'+id);
+  const pg=document.getElementById('page-'+id);
   if(pg) pg.classList.add('active');
-  const cfg = cfgPages[id]||{title:id,btn:'',show:false};
-  document.getElementById('topbar-title').textContent = cfg.title;
-  const btn = document.getElementById('topbar-btn');
-  btn.textContent = cfg.btn;
-  btn.style.display = cfg.show && cfg.btn ? 'block' : 'none';
-  paginaAtual = id;
-  renderPage(id);
+  const cfg=cfgPages[id]||{title:id,btn:'',show:false};
+  document.getElementById('topbar-title').textContent=cfg.title;
+  const btn=document.getElementById('topbar-btn');
+  btn.textContent=cfg.btn; btn.style.display=cfg.show&&cfg.btn?'block':'none';
+  paginaAtual=id; renderPage(id);
 }
-
-function topbarAction() {
+function topbarAction(){
   if(paginaAtual==='inicio'||paginaAtual==='pets') abrirModalPet();
-  else if(paginaAtual==='produtos') goto('carrinho', document.querySelector('.nav-item[onclick*="carrinho"]'));
 }
-
-// ============================================================
-// HELPERS
-// ============================================================
-function meusPets() { return getDB().pets.filter(p=>p.userId===eu.id); }
-function emoji(esp) { return esp==='Cachorro'?'🐶':esp==='Gato'?'🐱':esp==='Ave'?'🐦':'🐾'; }
-function calcIdade(nasc) {
+ 
+// ===== HELPERS =====
+function meusPets(){ return getDB().pets.filter(p=>p.userId===eu.id); }
+function emoji(esp){ return esp==='Cachorro'?'🐶':esp==='Gato'?'🐱':esp==='Ave'?'🐦':'🐾'; }
+function calcIdade(nasc){
   if(!nasc) return '';
-  const ms=Date.now()-new Date(nasc);
-  const anos=Math.floor(ms/(1000*60*60*24*365));
+  const ms=Date.now()-new Date(nasc),anos=Math.floor(ms/(1000*60*60*24*365));
   if(anos<1){ const m=Math.floor(ms/(1000*60*60*24*30)); return m+(m===1?' mês':' meses'); }
   return anos+(anos===1?' ano':' anos');
 }
-function vazio(txt) { return `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">${txt}</div>`; }
-
-// ============================================================
-// RENDERIZAÇÃO
-// ============================================================
-function renderPage(id) {
-  const mapa = { inicio:renderInicio, pets:renderPets, vacinacao:renderVacinacao, remedios:renderRemedios, consultas:renderConsultas, 'adm-usuarios':renderAdmUsuarios, 'adm-pets':renderAdmPets, 'adm-vacinas':renderAdmVacinas, 'adm-consultas':renderAdmConsultas, carrinho:()=>renderCarrinho() };
+function vazio(txt){ return `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">${txt}</div>`; }
+function fmtData(d){ if(!d) return '—'; const[y,m,day]=d.split('-'); return `${day}/${m}/${y}`; }
+function fmtPreco(v){ return 'R$ '+parseFloat(v).toFixed(2).replace('.',','); }
+function getVets(db){ return (db.veterinarios||[]).filter(v=>v.cargo==='Veterinário'||!v.cargo); }
+ 
+// ===== RENDERIZAÇÃO =====
+function renderPage(id){
+  const mapa={inicio:renderInicio,perfil:renderPerfil,pets:renderPets,vacinacao:renderVacinacao,
+    consultas:renderConsultas,produtos:renderProdutos,carrinho:renderCarrinho,
+    'adm-usuarios':renderAdmUsuarios,'adm-pets':renderAdmPets,'adm-vacinas':renderAdmVacinas,
+    'adm-consultas':renderAdmConsultas,'adm-vets':renderAdmVets,'adm-produtos':renderAdmProdutos,
+    'vet-painel':renderVetPainel};
   if(mapa[id]) mapa[id]();
 }
-
-// -------- INÍCIO --------
-function renderInicio() {
-  const pets=meusPets(), db=getDB();
-  const vacinas   = db.vacinas.filter(v=>pets.some(p=>p.id===v.petId));
-  const consultas = db.consultas.filter(c=>pets.some(p=>p.id===c.petId));
-  const remAtivos = db.remedios.filter(r=>pets.some(p=>p.id===r.petId)&&r.status==='Ativo');
-
+ 
+// ------- INÍCIO -------
+function renderInicio(){
+  const pets=meusPets(),db=getDB();
+  const vacinas=db.vacinas.filter(v=>pets.some(p=>p.id===v.petId));
+  const consultas=db.consultas.filter(c=>pets.some(p=>p.id===c.petId));
   document.getElementById('inicio-cards').innerHTML=`
     <div class="stat-card"><div class="stat-icon si-blue">🐶</div><div><div class="stat-label">Meus pets</div><div class="stat-val">${pets.length}</div></div></div>
     <div class="stat-card"><div class="stat-icon si-green">💉</div><div><div class="stat-label">Vacinas</div><div class="stat-val">${vacinas.length}</div></div></div>
-    <div class="stat-card"><div class="stat-icon si-amber">💊</div><div><div class="stat-label">Remédios ativos</div><div class="stat-val">${remAtivos.length}</div></div></div>
-    <div class="stat-card"><div class="stat-icon si-pink">📅</div><div><div class="stat-label">Consultas</div><div class="stat-val">${consultas.length}</div></div></div>`;
-
+    <div class="stat-card"><div class="stat-icon si-amber">📅</div><div><div class="stat-label">Consultas</div><div class="stat-val">${consultas.length}</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-pink">🕐</div><div><div class="stat-label">Agendadas</div><div class="stat-val">${consultas.filter(c=>c.status==='Agendada').length}</div></div></div>`;
   const evEl=document.getElementById('inicio-eventos');
-  evEl.innerHTML=consultas.length?`<table><thead><tr><th>Pet</th><th>Tipo</th><th>Data</th><th>Status</th></tr></thead><tbody>${consultas.slice(0,5).map(c=>{const p=pets.find(x=>x.id===c.petId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${c.tipo}</td><td>${c.data} ${c.hora}</td><td><span class="badge b-pen">${c.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhum evento próximo. Agende uma consulta!');
-
-  const items=[...vacinas.slice(0,3).map(v=>{const p=pets.find(x=>x.id===v.petId);return{label:`${p?.nome||'Pet'} — Vacina ${v.nome}`,sub:v.data+' · '+(v.vet||'—'),c:'tl-green'};}),
-               ...consultas.slice(0,2).map(c=>{const p=pets.find(x=>x.id===c.petId);return{label:`${p?.nome||'Pet'} — ${c.tipo}`,sub:c.data+' '+c.hora+' · '+c.vet,c:'tl-blue'};})];
+  evEl.innerHTML=consultas.length?`<table><thead><tr><th>Pet</th><th>Tipo</th><th>Data</th><th>Status</th></tr></thead><tbody>${consultas.slice(0,5).map(c=>{const p=pets.find(x=>x.id===c.petId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${c.tipo}</td><td>${fmtData(c.data)} ${c.hora}</td><td><span class="badge b-pen">${c.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhum evento próximo. Agende uma consulta!');
+  const items=[...vacinas.slice(0,3).map(v=>{const p=pets.find(x=>x.id===v.petId);return{label:`${p?.nome||'Pet'} — Vacina ${v.nome}`,sub:fmtData(v.data)+' · '+(v.vet||'—'),c:'tl-green'};}),
+               ...consultas.slice(0,2).map(c=>{const p=pets.find(x=>x.id===c.petId);return{label:`${p?.nome||'Pet'} — ${c.tipo}`,sub:fmtData(c.data)+' '+c.hora+' · '+c.vet,c:'tl-blue'};})];
   document.getElementById('inicio-historico').innerHTML=items.length?items.map(i=>`<div class="tl-item"><div class="tl-dot ${i.c}"></div><div><div class="tl-label">${i.label}</div><div class="tl-sub">${i.sub}</div></div></div>`).join(''):'<div style="color:var(--muted);font-size:13px">Nenhum histórico ainda.</div>';
 }
-
-// -------- PETS --------
-function renderPets() {
+ 
+// ------- PERFIL -------
+function renderPerfil(){
+  const db=getDB();
+  let dados={};
+  if(eu.tipo==='adm'||eu.tipo==='vet'){
+    dados={nome:eu.nome,email:eu.email,cargo:eu.cargo||'Administrador',crmv:eu.crmv||'—',especialidade:eu.especialidade||'—'};
+  } else {
+    const u=db.usuarios.find(u=>u.id===eu.id)||eu;
+    dados={nome:u.nome,email:u.email,telefone:u.telefone||'—',telefone2:u.telefone2||'',senha:u.senha};
+  }
+  const iniciais=eu.nome.split(' ').filter(Boolean).map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  let html=`
+    <div class="profile-section">
+      <div class="profile-avatar-big">${iniciais}</div>
+      <div style="margin-bottom:1rem">
+        <div style="font-size:22px;font-weight:800;color:var(--text)">${dados.nome}</div>
+        <div style="font-size:13px;color:var(--muted)">${dados.email}</div>
+      </div>`;
+  if(eu.tipo==='tutor'){
+    const u=db.usuarios.find(u=>u.id===eu.id)||eu;
+    html+=`
+      <h3 style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:1rem;padding-bottom:.65rem;border-bottom:.5px solid var(--border)">Editar dados</h3>
+      <div class="form-grid">
+        <div class="f"><label>Nome completo</label><input id="perf-nome" value="${u.nome}"/></div>
+        <div class="f"><label>E-mail</label><input type="email" id="perf-email" value="${u.email}"/></div>
+        <div class="f"><label>Telefone</label><input type="tel" id="perf-tel" value="${u.telefone||''}" maxlength="15" oninput="formatarTelefone(this)"/></div>
+        <div class="f"><label>Segundo telefone</label><input type="tel" id="perf-tel2" value="${u.telefone2||''}" maxlength="15" oninput="formatarTelefone(this)"/></div>
+        <div class="f"><label>Nova senha <span style="font-weight:400;font-size:11px">(deixe em branco para manter)</span></label><input type="password" id="perf-senha" placeholder="••••••••"/></div>
+        <div class="f"><label>Confirmar nova senha</label><input type="password" id="perf-senha2" placeholder="••••••••"/></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:8px">
+        <button class="btn-sm" onclick="salvarPerfil()">Salvar alterações</button>
+        <button class="btn-danger" onclick="document.getElementById('modal-excluir-conta').classList.add('open')">Excluir conta</button>
+      </div>`;
+  } else if(eu.tipo==='vet'){
+    html+=`<div class="form-grid">
+      <div class="f"><label>Cargo</label><div style="font-size:14px;font-weight:700;color:var(--text)">${eu.cargo||'—'}</div></div>
+      <div class="f"><label>CRMV</label><div style="font-size:14px;font-weight:700;color:var(--text)">${eu.crmv||'—'}</div></div>
+      <div class="f"><label>Especialidade</label><div style="font-size:14px;font-weight:700;color:var(--text)">${eu.especialidade||'—'}</div></div>
+    </div>`;
+  } else {
+    html+=`<div class="alert-info" style="border-radius:8px;padding:12px 14px;font-size:13px;font-weight:600;">Conta de Administrador — dados não editáveis aqui.</div>`;
+  }
+  html+=`</div>`;
+  document.getElementById('perfil-container').innerHTML=html;
+}
+ 
+function salvarPerfil(){
+  const db=getDB();
+  const i=db.usuarios.findIndex(u=>u.id===eu.id);
+  if(i<0){ showToast('Usuário não encontrado.'); return; }
+  const email=document.getElementById('perf-email').value.trim().toLowerCase();
+  const tel=document.getElementById('perf-tel').value;
+  const telNums=tel.replace(/\D/g,'');
+  if(!validarEmail(email)){ showToast('E-mail inválido.'); return; }
+  if(tel && (telNums.length<11||telNums.length>15)){ showToast('Telefone inválido.'); return; }
+  const senhaNew=document.getElementById('perf-senha').value;
+  const senhaNew2=document.getElementById('perf-senha2').value;
+  if(senhaNew && senhaNew!==senhaNew2){ showToast('As senhas não coincidem.'); return; }
+  db.usuarios[i]={...db.usuarios[i],
+    nome:document.getElementById('perf-nome').value.trim(),
+    email,telefone:tel,
+    telefone2:document.getElementById('perf-tel2').value,
+    senha:senhaNew||db.usuarios[i].senha};
+  eu={...eu,...db.usuarios[i]};
+  sessionStorage.setItem('pz_session',JSON.stringify(eu));
+  saveDB(db); showToast('Perfil atualizado! ✅'); renderPerfil();
+}
+ 
+function confirmarExclusaoConta(){
+  const senha=document.getElementById('excluir-senha').value;
+  const db=getDB();
+  const u=db.usuarios.find(u=>u.id===eu.id);
+  if(!u||u.senha!==senha){ showToast('Senha incorreta.'); return; }
+  db.usuarios=db.usuarios.filter(u=>u.id!==eu.id);
+  const meusPetsArr=db.pets.filter(p=>p.userId===eu.id).map(p=>p.id);
+  db.pets=db.pets.filter(p=>p.userId!==eu.id);
+  db.vacinas=db.vacinas.filter(v=>!meusPetsArr.includes(v.petId));
+  db.remedios=db.remedios.filter(r=>!meusPetsArr.includes(r.petId));
+  db.consultas=db.consultas.filter(c=>!meusPetsArr.includes(c.petId));
+  db.vacs_sol=(db.vacs_sol||[]).filter(s=>!meusPetsArr.includes(s.petId));
+  saveDB(db);
+  fecharModal('modal-excluir-conta');
+  showToast('Conta excluída.');
+  setTimeout(fazerLogout,800);
+}
+ 
+// ------- PETS -------
+function renderPets(){
   const pets=meusPets();
-  const grid=document.getElementById('pets-grid');
-  const ficha=document.getElementById('ficha-pet-container');
-
-  if(!pets.length) {
+  const grid=document.getElementById('pets-grid'),ficha=document.getElementById('ficha-pet-container');
+  if(!pets.length){
     grid.innerHTML=`<div class="pet-card add-card" onclick="abrirModalPet()"><div style="font-size:36px;margin-bottom:.5rem">➕</div><div style="font-size:13px;font-weight:700;color:var(--muted)">Cadastrar primeiro pet</div></div>`;
-    ficha.innerHTML=`<div class="empty-state"><div class="big">🐾</div><p>Você ainda não tem pets cadastrados.<br>Clique em "+ Cadastrar pet" para começar!</p></div>`;
+    ficha.innerHTML=`<div class="empty-state"><div class="big">🐾</div><p>Você ainda não tem pets cadastrados.</p></div>`;
     return;
   }
-
   if(!petAtual||!pets.find(p=>p.id===petAtual)) petAtual=pets[0].id;
-
   grid.innerHTML=pets.map(p=>`
     <div class="pet-card ${p.id===petAtual?'selected':''}" onclick="selecionarPet('${p.id}')">
       <div class="pet-avatar">${emoji(p.especie)}</div>
@@ -898,14 +1165,11 @@ function renderPets() {
         ${p.peso?`<span class="pet-tag">${p.peso} kg</span>`:''}
       </div>
     </div>`).join('')+`<div class="pet-card add-card" onclick="abrirModalPet()"><div style="font-size:32px;margin-bottom:.5rem">➕</div><div style="font-size:13px;font-weight:700;color:var(--muted)">Adicionar pet</div></div>`;
-
   renderFicha();
 }
-
 function selecionarPet(id){ petAtual=id; renderPets(); }
-
-function renderFicha() {
-  const db=getDB(), pet=db.pets.find(p=>p.id===petAtual);
+function renderFicha(){
+  const db=getDB(),pet=db.pets.find(p=>p.id===petAtual);
   if(!pet) return;
   const cores=[{bg:'#d4a853',l:'Dourado'},{bg:'#c0a080',l:'Caramelo'},{bg:'#1a1a1a',l:'Preto'},{bg:'#fff',l:'Branco',b:'#ccc'},{bg:'#888',l:'Cinza'},{bg:'#6b3a1f',l:'Marrom'},{bg:'#f5c58e',l:'Bege'},{bg:'linear-gradient(135deg,#1a1a1a 50%,#fff 50%)',l:'Preto e Branco'}];
   document.getElementById('ficha-pet-container').innerHTML=`
@@ -918,19 +1182,17 @@ function renderFicha() {
     <div class="form-grid">
       <div class="f"><label>Nome</label><input id="ed-nome" value="${pet.nome}"/></div>
       <div class="f"><label>Espécie</label><select id="ed-esp">${['Cachorro','Gato','Ave','Outro'].map(e=>`<option${pet.especie===e?' selected':''}>${e}</option>`).join('')}</select></div>
-      <div class="f"><label>Raça</label><input id="ed-raca" value="${pet.raca}"/></div>
+      <div class="f"><label>Raça</label><input id="ed-raca" value="${pet.raca||''}"/></div>
       <div class="f"><label>Sexo</label><select id="ed-sexo"><option${pet.sexo==='Macho'?' selected':''}>Macho</option><option${pet.sexo==='Fêmea'?' selected':''}>Fêmea</option></select></div>
-      <div class="f"><label>Nascimento</label><input type="date" id="ed-nasc" value="${pet.nasc}"/></div>
-      <div class="f"><label>Peso (kg)</label><input type="number" id="ed-peso" value="${pet.peso}"/></div>
+      <div class="f"><label>Nascimento</label><input type="date" id="ed-nasc" value="${pet.nasc||''}"/></div>
+      <div class="f"><label>Peso (kg)</label><input type="number" id="ed-peso" value="${pet.peso||''}"/></div>
       <div class="f"><label>Porte</label><select id="ed-porte">${['Pequeno','Médio','Grande'].map(p=>`<option${pet.porte===p?' selected':''}>${p}</option>`).join('')}</select></div>
       <div class="f"><label>Castrado?</label><select id="ed-cast"><option${pet.castrado==='Não'?' selected':''}>Não</option><option${pet.castrado==='Sim'?' selected':''}>Sim</option></select></div>
-      <div class="f"><label>Microchip</label><input id="ed-chip" value="${pet.chip}"/></div>
+      <div class="f"><label>Microchip</label><input id="ed-chip" value="${pet.chip||''}"/></div>
       <div class="f"><label>Cor / pelagem</label>
-        <div class="color-opts" id="ed-cores">
-          ${cores.map(c=>`<div class="color-opt${pet.cor===c.l?' selected':''}" style="background:${c.bg};${c.b?'border-color:'+c.b+';':''}" data-cor="${c.l}" title="${c.l}" onclick="selCorEd(this)"></div>`).join('')}
-        </div>
+        <div class="color-opts" id="ed-cores">${cores.map(c=>`<div class="color-opt${pet.cor===c.l?' selected':''}" style="background:${c.bg};${c.b?'border-color:'+c.b+';':''}" data-cor="${c.l}" title="${c.l}" onclick="selCorEd(this)"></div>`).join('')}</div>
       </div>
-      <div class="f span2"><label>Observações / alergias</label><textarea id="ed-obs">${pet.obs}</textarea></div>
+      <div class="f span2"><label>Observações / alergias</label><textarea id="ed-obs">${pet.obs||''}</textarea></div>
     </div>
     <div style="margin-top:1rem;display:flex;gap:8px">
       <button class="btn-sm" onclick="salvarFicha()">Salvar alterações</button>
@@ -938,24 +1200,15 @@ function renderFicha() {
     </div>
   </div>`;
 }
-
 function selCorEd(el){ el.closest('.color-opts').querySelectorAll('.color-opt').forEach(o=>o.classList.remove('selected')); el.classList.add('selected'); }
-
-function salvarFicha() {
-  const db=getDB(), i=db.pets.findIndex(p=>p.id===petAtual);
+function salvarFicha(){
+  const db=getDB(),i=db.pets.findIndex(p=>p.id===petAtual);
   if(i<0) return;
   const corEl=document.querySelector('#ed-cores .color-opt.selected');
-  db.pets[i]={...db.pets[i],
-    nome:document.getElementById('ed-nome').value, especie:document.getElementById('ed-esp').value,
-    raca:document.getElementById('ed-raca').value, sexo:document.getElementById('ed-sexo').value,
-    nasc:document.getElementById('ed-nasc').value, peso:document.getElementById('ed-peso').value,
-    porte:document.getElementById('ed-porte').value, castrado:document.getElementById('ed-cast').value,
-    chip:document.getElementById('ed-chip').value, cor:corEl?corEl.dataset.cor:db.pets[i].cor,
-    obs:document.getElementById('ed-obs').value};
+  db.pets[i]={...db.pets[i],nome:document.getElementById('ed-nome').value,especie:document.getElementById('ed-esp').value,raca:document.getElementById('ed-raca').value,sexo:document.getElementById('ed-sexo').value,nasc:document.getElementById('ed-nasc').value,peso:document.getElementById('ed-peso').value,porte:document.getElementById('ed-porte').value,castrado:document.getElementById('ed-cast').value,chip:document.getElementById('ed-chip').value,cor:corEl?corEl.dataset.cor:db.pets[i].cor,obs:document.getElementById('ed-obs').value};
   saveDB(db); showToast('Ficha salva! 🐾'); renderPets();
 }
-
-function excluirPet(id) {
+function excluirPet(id){
   if(!confirm('Excluir este pet? Todos os dados dele serão removidos.')) return;
   const db=getDB();
   db.pets=db.pets.filter(p=>p.id!==id);
@@ -964,56 +1217,74 @@ function excluirPet(id) {
   db.consultas=db.consultas.filter(c=>c.petId!==id);
   saveDB(db); petAtual=null; showToast('Pet removido.'); renderPets();
 }
-
-// -------- VACINAÇÃO --------
-function renderVacinacao() {
-  const pets=meusPets(), db=getDB();
+ 
+// ------- VACINAÇÃO -------
+function renderVacinacao(){
+  const pets=meusPets(),db=getDB();
   const vacinas=db.vacinas.filter(v=>pets.some(p=>p.id===v.petId));
+  const sols=(db.vacs_sol||[]).filter(s=>pets.some(p=>p.id===s.petId));
   document.getElementById('vac-cards').innerHTML=`
     <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">Em dia</div><div class="stat-val">${vacinas.filter(v=>v.status==='Em dia').length}</div></div></div>
-    <div class="stat-card"><div class="stat-icon si-amber">⚠️</div><div><div class="stat-label">Pendentes</div><div class="stat-val">${vacinas.filter(v=>v.status==='Pendente').length}</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-amber">⏳</div><div><div class="stat-label">Solicitações</div><div class="stat-val">${sols.filter(s=>s.status==='Pendente').length}</div></div></div>
     <div class="stat-card"><div class="stat-icon si-blue">💉</div><div><div class="stat-label">Total</div><div class="stat-val">${vacinas.length}</div></div></div>`;
   const sel=document.getElementById('vac-pet-sel');
   sel.innerHTML=pets.length?pets.map(p=>`<option value="${p.id}">${emoji(p.especie)} ${p.nome}</option>`).join(''):'<option value="">Sem pets cadastrados</option>';
-  document.getElementById('vac-table-container').innerHTML=vacinas.length?`<table><thead><tr><th>Pet</th><th>Vacina</th><th>Aplicação</th><th>Próxima dose</th><th>Veterinário</th><th>Status</th></tr></thead><tbody>${vacinas.map(v=>{const p=pets.find(x=>x.id===v.petId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${v.nome}</td><td>${v.data}</td><td>${v.prox||'—'}</td><td>${v.vet||'—'}</td><td><span class="badge ${v.status==='Em dia'?'b-ok':'b-pen'}">${v.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma vacina registrada. Preencha o formulário abaixo!');
+  // preencher veterinários
+  const vets=getVets(db);
+  const vetSel=document.getElementById('vac-vet-sel');
+  vetSel.innerHTML=vets.length?vets.map(v=>`<option value="${v.id}">${v.nome}</option>`).join(''):'<option value="">Nenhum veterinário cadastrado</option>';
+  // tabela vacinas
+  document.getElementById('vac-table-container').innerHTML=vacinas.length?`<table><thead><tr><th>Pet</th><th>Vacina</th><th>Aplicação</th><th>Próxima</th><th>Veterinário</th><th>Status</th></tr></thead><tbody>${vacinas.map(v=>{const p=pets.find(x=>x.id===v.petId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${v.nome}</td><td>${fmtData(v.data)}</td><td>${fmtData(v.prox)}</td><td>${v.vet||'—'}</td><td><span class="badge b-ok">${v.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma vacina registrada ainda.');
+  // solicitações
+  const solCont=document.getElementById('vac-solicitacoes-container');
+  if(!sols.length){ solCont.innerHTML=vazio('Nenhuma solicitação enviada ainda.'); return; }
+  solCont.innerHTML=sols.map(s=>{
+    const p=pets.find(x=>x.id===s.petId),vet=db.veterinarios&&db.veterinarios.find(v=>v.id===s.vetId);
+    let statusBadge=s.status==='Aceita'?'b-ok':s.status==='Pendente'?'b-pen':'b-err';
+    let extra='';
+    if(s.status==='Aceita'){
+      extra=`<div class="alert-ok" style="border-radius:8px;padding:8px 12px;font-size:12px;margin-top:8px">✅ Solicitação aceita em ${fmtData(s.dataAceite)}. Vacina: ${s.vacinaAplicada||s.vacina} — ${fmtData(s.dataAplicacao)}${s.lote?' · Lote: '+s.lote:''}${s.obsVet?' · '+s.obsVet:''}</div>`;
+    }
+    return `<div class="vac-request-card">
+      <div class="vac-request-header">
+        <div><div class="vac-request-title">${emoji(p?.especie)} ${p?.nome||'—'} — ${s.vacina}</div>
+        <div class="vac-request-sub">Vet: ${vet?.nome||'—'} · Pref.: ${fmtData(s.dataPref)}</div></div>
+        <span class="badge ${statusBadge}">${s.status}</span>
+      </div>
+      ${s.obs?`<div style="font-size:12px;color:var(--muted)">${s.obs}</div>`:''}
+      ${extra}
+    </div>`;
+  }).join('');
 }
-
-function salvarVacina() {
+ 
+function solicitarVacina(){
   const pets=meusPets();
   if(!pets.length){ showToast('Cadastre um pet primeiro!'); return; }
-  const nome=document.getElementById('vac-nome').value.trim(), data=document.getElementById('vac-data').value;
-  if(!nome||!data){ showToast('Informe a vacina e a data de aplicação.'); return; }
+  const tipo=document.getElementById('vac-tipo-sel').value;
+  const dataPref=document.getElementById('vac-data-pref').value;
+  const vetId=document.getElementById('vac-vet-sel').value;
+  if(!tipo||tipo===""){ showToast('Selecione a vacina desejada.'); return; }
+  if(!dataPref){ showToast('Informe a data preferida.'); return; }
+  if(!vetId){ showToast('Selecione um veterinário.'); return; }
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  const dataSel=new Date(dataPref+'T12:00:00');
+  if(dataSel<hoje){ showToast('Não é possível selecionar datas passadas.'); return; }
   const db=getDB();
-  db.vacinas.push({id:'v_'+Date.now(),petId:document.getElementById('vac-pet-sel').value,nome,data,prox:document.getElementById('vac-prox').value,vet:document.getElementById('vac-vet').value,lote:document.getElementById('vac-lote').value,obs:document.getElementById('vac-obs').value,status:'Em dia'});
+  if(!db.vacs_sol) db.vacs_sol=[];
+  db.vacs_sol.push({id:'vs_'+Date.now(),petId:document.getElementById('vac-pet-sel').value,vacina:tipo,vetId,dataPref,obs:document.getElementById('vac-obs-sol').value,status:'Pendente',criadaEm:new Date().toISOString().split('T')[0]});
   saveDB(db);
-  ['vac-nome','vac-data','vac-prox','vac-vet','vac-lote','vac-obs'].forEach(id=>document.getElementById(id).value='');
-  showToast('Vacina registrada! 💉'); renderVacinacao();
+  document.getElementById('vac-tipo-sel').value='';
+  document.getElementById('vac-data-pref').value='';
+  document.getElementById('vac-obs-sol').value='';
+  showToast('Solicitação enviada! O veterinário responderá em breve. 💉');
+  renderVacinacao();
 }
-
-// -------- REMÉDIOS --------
-function renderRemedios() {
-  const pets=meusPets(), db=getDB();
-  const rems=db.remedios.filter(r=>pets.some(p=>p.id===r.petId));
-  const sel=document.getElementById('rem-pet-sel');
-  sel.innerHTML=pets.length?pets.map(p=>`<option value="${p.id}">${emoji(p.especie)} ${p.nome}</option>`).join(''):'<option value="">Sem pets cadastrados</option>';
-  document.getElementById('rem-table-container').innerHTML=rems.length?`<table><thead><tr><th>Pet</th><th>Medicamento</th><th>Dose</th><th>Frequência</th><th>Período</th><th>Status</th></tr></thead><tbody>${rems.map(r=>{const p=pets.find(x=>x.id===r.petId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${r.nome}</td><td>${r.dose||'—'}</td><td>${r.freq}</td><td>${r.inicio||'—'}${r.cont==='Sim'?' – contínuo':r.fim?' – '+r.fim:''}</td><td><span class="badge ${r.status==='Ativo'?'b-vac':'b-ok'}">${r.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhum medicamento registrado ainda.');
-}
-
-function salvarRemedio() {
-  const pets=meusPets();
-  if(!pets.length){ showToast('Cadastre um pet primeiro!'); return; }
-  const nome=document.getElementById('rem-nome').value.trim();
-  if(!nome){ showToast('Informe o nome do medicamento.'); return; }
-  const db=getDB();
-  db.remedios.push({id:'r_'+Date.now(),petId:document.getElementById('rem-pet-sel').value,nome,dose:document.getElementById('rem-dose').value,freq:document.getElementById('rem-freq').value,inicio:document.getElementById('rem-inicio').value,fim:document.getElementById('rem-fim').value,vet:document.getElementById('rem-vet').value,cont:document.getElementById('rem-cont').value,obs:document.getElementById('rem-obs').value,status:'Ativo'});
-  saveDB(db);
-  ['rem-nome','rem-dose','rem-inicio','rem-fim','rem-vet','rem-obs'].forEach(id=>document.getElementById(id).value='');
-  showToast('Medicamento salvo! 💊'); renderRemedios();
-}
-
-// -------- CONSULTAS --------
-function renderConsultas() {
-  const pets=meusPets(), db=getDB();
+ 
+// ------- CONSULTAS -------
+const HORARIOS=['08:00','09:00','10:00','11:00','14:00','15:00','16:00','17:00'];
+ 
+function renderConsultas(){
+  const pets=meusPets(),db=getDB();
   const cons=db.consultas.filter(c=>pets.some(p=>p.id===c.petId));
   document.getElementById('cons-cards').innerHTML=`
     <div class="stat-card"><div class="stat-icon si-blue">📅</div><div><div class="stat-label">Agendadas</div><div class="stat-val">${cons.filter(c=>c.status==='Agendada').length}</div></div></div>
@@ -1021,23 +1292,444 @@ function renderConsultas() {
     <div class="stat-card"><div class="stat-icon si-amber">📋</div><div><div class="stat-label">Total</div><div class="stat-val">${cons.length}</div></div></div>`;
   const sel=document.getElementById('cons-pet-sel');
   sel.innerHTML=pets.length?pets.map(p=>`<option value="${p.id}">${emoji(p.especie)} ${p.nome}</option>`).join(''):'<option value="">Sem pets cadastrados</option>';
-  document.getElementById('cons-table-container').innerHTML=cons.length?`<table><thead><tr><th>Pet</th><th>Tipo</th><th>Data</th><th>Horário</th><th>Veterinário</th><th>Status</th></tr></thead><tbody>${cons.map(c=>{const p=pets.find(x=>x.id===c.petId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${c.tipo}</td><td>${c.data}</td><td>${c.hora}</td><td>${c.vet}</td><td><span class="badge ${c.status==='Agendada'?'b-pen':'b-ok'}">${c.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma consulta agendada ainda.');
+  // veterinários
+  const vets=getVets(db);
+  const vetSel=document.getElementById('cons-vet');
+  vetSel.innerHTML=['Sem preferência'].concat(vets.map(v=>v.nome)).map(n=>`<option>${n}</option>`).join('');
+  // data mínima
+  const consData=document.getElementById('cons-data');
+  const hoje=new Date(),yy=hoje.getFullYear(),mm=String(hoje.getMonth()+1).padStart(2,'0'),dd=String(hoje.getDate()).padStart(2,'0');
+  consData.min=`${yy}-${mm}-${dd}`;
+  // tabela
+  document.getElementById('cons-table-container').innerHTML=cons.length?`<table><thead><tr><th>Pet</th><th>Tipo</th><th>Data</th><th>Horário</th><th>Veterinário</th><th>Status</th><th>Ação</th></tr></thead><tbody>${cons.map(c=>{const p=pets.find(x=>x.id===c.petId);const pode=c.status==='Agendada';return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${c.tipo}</td><td>${fmtData(c.data)}</td><td>${c.hora}</td><td>${c.vet}</td><td><span class="badge ${c.status==='Agendada'?'b-pen':c.status==='Cancelada'?'b-cancel':'b-ok'}">${c.status}</span></td><td>${pode?`<button class="btn-danger" style="font-size:11px;padding:.25rem .6rem" onclick="abrirCancelamento('${c.id}')">Cancelar</button>`:'—'}</td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma consulta agendada ainda.');
+  atualizarHorarios();
 }
-
-function salvarConsulta() {
+ 
+function atualizarHorarios(){
+  const data=document.getElementById('cons-data').value;
+  const vetNome=document.getElementById('cons-vet').value;
+  const db=getDB();
+  const ocupados=db.consultas.filter(c=>c.data===data&&c.status==='Agendada'&&(vetNome==='Sem preferência'||c.vet===vetNome)).map(c=>c.hora);
+  const cont=document.getElementById('time-slots-container');
+  document.getElementById('cons-hora-sel').value='';
+  if(!data){ cont.innerHTML='<span style="font-size:12px;color:var(--muted)">Selecione uma data primeiro.</span>'; return; }
+  cont.innerHTML=HORARIOS.map(h=>{
+    const disabled=ocupados.includes(h);
+    return`<div class="time-slot${disabled?' disabled':''}" onclick="${disabled?'':'selecionarHorario(this,\''+h+'\')'}">⏰ ${h}</div>`;
+  }).join('');
+}
+ 
+function selecionarHorario(el,hora){
+  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-hora-sel').value=hora;
+}
+ 
+function salvarConsulta(){
   const pets=meusPets();
   if(!pets.length){ showToast('Cadastre um pet primeiro!'); return; }
   const data=document.getElementById('cons-data').value;
-  if(!data){ showToast('Selecione uma data para a consulta.'); return; }
+  const hora=document.getElementById('cons-hora-sel').value;
+  if(!data){ showToast('Selecione uma data.'); return; }
+  if(!hora){ showToast('Selecione um horário disponível.'); return; }
+  // Validar data >= hoje
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  const dataSel=new Date(data+'T12:00:00');
+  if(dataSel<hoje){ showToast('Não é possível agendar em datas passadas.'); return; }
+  // Validar horário se hoje
+  if(dataSel.toDateString()===hoje.toDateString()){
+    const agora=new Date();
+    const [hh,mm]=hora.split(':').map(Number);
+    if(agora.getHours()>hh||(agora.getHours()===hh&&agora.getMinutes()>=0)){ showToast('Horário já passou. Escolha outro.'); return; }
+  }
+  const vet=document.getElementById('cons-vet').value;
   const db=getDB();
-  db.consultas.push({id:'c_'+Date.now(),petId:document.getElementById('cons-pet-sel').value,tipo:document.getElementById('cons-tipo').value,data,hora:document.getElementById('cons-hora').value,vet:document.getElementById('cons-vet').value,motivo:document.getElementById('cons-motivo').value,status:'Agendada'});
+  // Duplo agendamento
+  const conflito=db.consultas.find(c=>c.data===data&&c.hora===hora&&c.vet===vet&&c.status==='Agendada');
+  if(conflito){ showToast('Esse horário já está ocupado para este veterinário!'); return; }
+  const nova={id:'c_'+Date.now(),petId:document.getElementById('cons-pet-sel').value,tipo:document.getElementById('cons-tipo').value,data,hora,vet,motivo:document.getElementById('cons-motivo').value,status:'Agendada'};
+  db.consultas.push(nova);
   saveDB(db);
-  document.getElementById('cons-data').value=''; document.getElementById('cons-motivo').value='';
-  showToast('Consulta agendada! 📅'); renderConsultas();
+  const p=pets.find(x=>x.id===nova.petId);
+  document.getElementById('cons-confirm-msg').innerHTML=`🐾 Consulta agendada para <strong>${p?.nome||'seu pet'}</strong> em <strong>${fmtData(data)}</strong> às <strong>${hora}</strong> com <strong>${vet}</strong>.`;
+  document.getElementById('modal-cons-confirm').classList.add('open');
+  document.getElementById('cons-data').value='';
+  document.getElementById('cons-hora-sel').value='';
+  document.getElementById('cons-motivo').value='';
+  renderConsultas();
 }
-
-// -------- MODAL NOVO PET --------
-function abrirModalPet() {
+ 
+function abrirCancelamento(id){
+  const db=getDB(),c=db.consultas.find(x=>x.id===id);
+  if(!c) return;
+  const dataC=new Date(c.data+'T12:00:00');
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  const diff=Math.ceil((dataC-hoje)/(1000*60*60*24));
+  document.getElementById('cancel-cons-id').value=id;
+  let msg='';
+  if(diff>3){
+    msg=`<div class="alert-ok" style="border-radius:8px;padding:12px 14px;font-size:13px;font-weight:600;margin-bottom:1rem;">✅ Cancelamento gratuito. A consulta é em ${diff} dias — dentro do prazo de 3 dias.</div>`;
+  } else {
+    msg=`<div class="alert-warn" style="border-radius:8px;padding:12px 14px;font-size:13px;font-weight:600;margin-bottom:1rem;">⚠️ Cancelamento com taxa! A consulta é em ${diff} dia(s). O prazo gratuito (3 dias antes) já encerrou. Uma taxa de cancelamento será cobrada.</div>`;
+  }
+  msg+=`<div style="font-size:13px;color:var(--text)">Consulta: <strong>${c.tipo}</strong> em <strong>${fmtData(c.data)}</strong> às <strong>${c.hora}</strong> com <strong>${c.vet}</strong>.</div>`;
+  document.getElementById('cancel-cons-msg').innerHTML=msg;
+  document.getElementById('modal-cancelar-cons').classList.add('open');
+}
+ 
+function confirmarCancelamento(){
+  const id=document.getElementById('cancel-cons-id').value;
+  const db=getDB();
+  const i=db.consultas.findIndex(c=>c.id===id);
+  if(i>=0) db.consultas[i].status='Cancelada';
+  saveDB(db);
+  fecharModal('modal-cancelar-cons');
+  showToast('Consulta cancelada.');
+  renderConsultas();
+}
+ 
+// ------- PRODUTOS / LOJA -------
+const CATEGORIAS=['Todos','Rações','Petiscos','Medicamentos','Higiene e Limpeza','Brinquedos','Acessórios','Comedouros e Bebedouros','Areia Sanitária','Aquarismo','Antipulgas e Carrapatos','Shampoos e Cosméticos','Arranhadores','Viveiros e Gaiolas','Higiene Bucal','Tapetes Higiênicos'];
+const CAT_CORES={'Rações':'#e8f3f9','Petiscos':'#fff4e0','Medicamentos':'#fce8ef','Higiene e Limpeza':'#e1f5ee','Brinquedos':'#f3e8ff','Acessórios':'#e8f0ff','Medicamentos':'#fce8ef','Antipulgas e Carrapatos':'#fde8e8','Shampoos e Cosméticos':'#fce8f5','Aquarismo':'#e8f8ff','Areia Sanitária':'#f5ede8','Comedouros e Bebedouros':'#e8f3e8','Brinquedos':'#f0f8e8','Arranhadores':'#f8f0e8','Viveiros e Gaiolas':'#f0e8f8','Higiene Bucal':'#e8f5ff','Tapetes Higiênicos':'#f5f5e8'};
+ 
+function renderProdutos(){
+  const db=getDB();
+  const produtos=getDBProdutos(db);
+  // botões de filtro
+  const filterCont=document.getElementById('shop-filter-btns');
+  filterCont.innerHTML=CATEGORIAS.map(c=>`<button class="filter-btn${c===filtroCategoria?' active':''}" onclick="setFiltroCategoria('${c}')">${c}</button>`).join('');
+  // grid
+  const grid=document.getElementById('products-grid');
+  grid.innerHTML=produtos.map(p=>{
+    const corBg=CAT_CORES[p.categoria]||'#f0f6fa';
+    return`<div class="product-card" data-cat="${p.categoria}" data-nome="${p.nome.toLowerCase()}" data-desc="${(p.desc||'').toLowerCase()}">
+      <div class="product-img" style="background:${corBg}">${p.emoji||'📦'}</div>
+      <div class="product-body">
+        <span class="product-cat" style="background:${corBg};color:var(--primary)">${p.categoria}</span>
+        <div class="product-name">${p.nome}</div>
+        <div class="product-desc">${p.desc||''}</div>
+        <div class="product-price">${fmtPreco(p.preco)}</div>
+        <button class="btn-buy" onclick="adicionarCarrinho('${p.id}')">Adicionar ao carrinho</button>
+      </div>
+    </div>`;
+  }).join('');
+  filtrarProdutos();
+}
+ 
+function setFiltroCategoria(cat){
+  filtroCategoria=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.textContent===cat));
+  filtrarProdutos();
+}
+ 
+function filtrarProdutos(){
+  const q=(document.getElementById('shop-search').value||'').toLowerCase();
+  const cards=document.querySelectorAll('.product-card');
+  let visivel=0;
+  cards.forEach(c=>{
+    const cat=c.dataset.cat||'';
+    const nome=c.dataset.nome||'';
+    const desc=c.dataset.desc||'';
+    const matchCat=filtroCategoria==='Todos'||cat===filtroCategoria;
+    const matchQ=!q||nome.includes(q)||desc.includes(q)||cat.toLowerCase().includes(q);
+    const show=matchCat&&matchQ;
+    c.classList.toggle('hidden',!show);
+    if(show) visivel++;
+  });
+  document.getElementById('products-empty').style.display=visivel===0?'block':'none';
+}
+ 
+// ======== SISTEMA DE CARRINHO ========
+let carrinhoItens = []; // [{id, nome, preco, emoji, categoria, qty}]
+let metodoPag = 'credito';
+ 
+function atualizarCartUI(){
+  const total = carrinhoItens.reduce((s,i)=>s+i.qty,0);
+  cartCount = total;
+  document.getElementById('cart-count').textContent = total;
+  const badge = document.getElementById('nav-cart-badge');
+  if(badge){ badge.textContent = total; badge.style.display = total>0?'inline-flex':'none'; }
+}
+ 
+function adicionarCarrinho(prodId){
+  const db=getDB(), prods=getDBProdutos(db);
+  const p=prods.find(x=>x.id===prodId);
+  if(!p){ showToast('Produto não encontrado.'); return; }
+  const idx=carrinhoItens.findIndex(i=>i.id===prodId);
+  if(idx>=0){ carrinhoItens[idx].qty++; }
+  else { carrinhoItens.push({id:p.id,nome:p.nome,preco:p.preco,emoji:p.emoji||'📦',categoria:p.categoria,qty:1}); }
+  atualizarCartUI();
+  showToast(`🛒 ${p.nome} adicionado!`);
+}
+ 
+function irCarrinho(){
+  const navItem = document.getElementById('nav-carrinho');
+  goto('carrinho', navItem);
+}
+ 
+function irLoja(){
+  const navItem = document.querySelector('.nav-item[onclick*="produtos"]');
+  goto('produtos', navItem);
+}
+ 
+function renderCarrinho(){
+  const vazio = carrinhoItens.length === 0;
+  document.getElementById('cart-vazio').style.display = vazio ? 'block' : 'none';
+  document.getElementById('cart-conteudo').style.display = vazio ? 'none' : 'block';
+  if(vazio) return;
+ 
+  const subtotal = carrinhoItens.reduce((s,i)=>s+i.preco*i.qty, 0);
+  const frete = subtotal >= 150 ? 0 : 19.90;
+  const total = subtotal + frete;
+ 
+  document.getElementById('sum-subtotal').textContent = fmtPreco(subtotal);
+  document.getElementById('sum-frete').textContent = frete===0 ? 'Grátis 🎉' : fmtPreco(frete);
+  document.getElementById('sum-total').textContent = fmtPreco(total);
+ 
+  const banner = document.getElementById('cart-frete-banner');
+  if(frete > 0){
+    const faltam = 150 - subtotal;
+    banner.textContent = `🚚 Falta ${fmtPreco(faltam)} para frete grátis!`;
+    banner.style.display = 'block';
+  } else {
+    banner.textContent = '🎉 Você ganhou frete grátis!';
+    banner.style.display = 'block';
+  }
+ 
+  document.getElementById('cart-lista').innerHTML = carrinhoItens.map(item => {
+    const corBg = CAT_CORES[item.categoria] || '#f0f6fa';
+    return `<div class="cart-item-row">
+      <div class="cart-item-emoji" style="background:${corBg}">${item.emoji}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.nome}</div>
+        <div class="cart-item-sub">${fmtPreco(item.preco)} × ${item.qty}</div>
+      </div>
+      <div class="cart-item-price">${fmtPreco(item.preco*item.qty)}</div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="alterarQtd('${item.id}',-1)">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="alterarQtd('${item.id}',1)">+</button>
+      </div>
+      <button class="btn-danger" style="font-size:11px;padding:.25rem .55rem;margin-left:6px" onclick="removerItem('${item.id}')">×</button>
+    </div>`;
+  }).join('');
+}
+ 
+function alterarQtd(id, delta){
+  const idx = carrinhoItens.findIndex(i=>i.id===id);
+  if(idx<0) return;
+  carrinhoItens[idx].qty += delta;
+  if(carrinhoItens[idx].qty <= 0) carrinhoItens.splice(idx, 1);
+  atualizarCartUI();
+  renderCarrinho();
+}
+ 
+function removerItem(id){
+  carrinhoItens = carrinhoItens.filter(i=>i.id!==id);
+  atualizarCartUI();
+  renderCarrinho();
+  showToast('Item removido.');
+}
+ 
+function limparCarrinho(){
+  if(!carrinhoItens.length) return;
+  if(!confirm('Esvaziar o carrinho?')) return;
+  carrinhoItens = []; atualizarCartUI(); renderCarrinho();
+}
+ 
+// ======== CHECKOUT ========
+function abrirCheckout(){
+  if(!carrinhoItens.length){ showToast('Carrinho vazio!'); return; }
+  // pré-preencher com dados do usuário
+  if(eu){
+    document.getElementById('ck-nome').value = eu.nome||'';
+    document.getElementById('ck-email').value = eu.email||'';
+    document.getElementById('ck-tel').value = eu.telefone||'';
+  }
+  // montar parcelas
+  const subtotal = carrinhoItens.reduce((s,i)=>s+i.preco*i.qty,0);
+  const total = subtotal + (subtotal>=150?0:19.90);
+  const sel = document.getElementById('ck-parcelas');
+  sel.innerHTML = [1,2,3,6,10,12].map(n => {
+    const v = total/n;
+    return `<option value="${n}">${n}x de ${fmtPreco(v)}${n<=3?' (sem juros)':' (c/ juros)'}</option>`;
+  }).join('');
+  document.getElementById('pix-valor-display').textContent = fmtPreco(total);
+  // resetar steps
+  ckMostrarPasso(1);
+  document.getElementById('ck-sucesso').style.display = 'none';
+  document.getElementById('ck-steps').style.display = 'flex';
+  metodoPag = 'credito';
+  ['ptab-credito','ptab-debito','ptab-pix'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('ptab-credito').classList.add('active');
+  document.getElementById('pay-cartao').style.display = 'block';
+  document.getElementById('pay-pix-area').style.display = 'none';
+  document.getElementById('parcelas-wrap').style.display = 'flex';
+  document.getElementById('modal-checkout').classList.add('open');
+}
+ 
+function ckMostrarPasso(n){
+  [1,2,3].forEach(i => {
+    document.getElementById('ck-passo-'+i).style.display = i===n ? 'block' : 'none';
+    const lbl = document.getElementById('ck-step-lbl-'+i);
+    lbl.className = 'ck-step' + (i===n?' active':i<n?' done':'');
+  });
+}
+ 
+function ckVoltar(n){ ckMostrarPasso(n); }
+ 
+function selecionarPagamento(tipo){
+  metodoPag = tipo;
+  ['credito','debito','pix'].forEach(t => document.getElementById('ptab-'+t).classList.toggle('active', t===tipo));
+  document.getElementById('pay-cartao').style.display = tipo!=='pix' ? 'block' : 'none';
+  document.getElementById('pay-pix-area').style.display = tipo==='pix' ? 'block' : 'none';
+  document.getElementById('parcelas-wrap').style.display = tipo==='credito' ? 'flex' : 'none';
+}
+ 
+function maskCPF(el){
+  let v = el.value.replace(/\D/g,'').slice(0,11);
+  v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+  el.value = v;
+}
+function maskCEP(el){
+  let v = el.value.replace(/\D/g,'').slice(0,8);
+  if(v.length>5) v = v.slice(0,5)+'-'+v.slice(5);
+  el.value = v;
+}
+function maskCartao(el){
+  let v = el.value.replace(/\D/g,'').slice(0,16);
+  v = v.replace(/(\d{4})/g,'$1 ').trim();
+  el.value = v;
+  let d=''; const raw=v.replace(/ /g,'');
+  for(let i=0;i<16;i++){d+=raw[i]?raw[i]:'•';if((i+1)%4===0&&i<15)d+=' ';}
+  document.getElementById('cv-num-display').textContent = d;
+}
+function maskValidade(el){
+  let v = el.value.replace(/\D/g,'').slice(0,4);
+  if(v.length>2) v = v.slice(0,2)+'/'+v.slice(2);
+  el.value = v;
+  document.getElementById('cv-val-display').textContent = v||'MM/AA';
+}
+ 
+async function buscarCEP(){
+  const cep = document.getElementById('ck-cep').value.replace(/\D/g,'');
+  if(cep.length!==8) return;
+  try{
+    const r = await fetch('https://viacep.com.br/ws/'+cep+'/json/');
+    const d = await r.json();
+    if(!d.erro){
+      document.getElementById('ck-rua').value = d.logradouro||'';
+      document.getElementById('ck-bairro').value = d.bairro||'';
+      document.getElementById('ck-cidade').value = d.localidade||'';
+      document.getElementById('ck-estado').value = d.uf||'';
+      showToast('✅ Endereço preenchido automaticamente!');
+    }
+  }catch(e){}
+}
+ 
+function ckPasso2(){
+  const campos = ['ck-nome','ck-cpf','ck-email','ck-tel','ck-cep','ck-cidade','ck-bairro','ck-rua','ck-numero'];
+  let ok = true;
+  campos.forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('invalid');
+    if(!el.value.trim()){ el.classList.add('invalid'); ok=false; }
+  });
+  if(!ok){ showToast('Preencha todos os campos obrigatórios.'); return; }
+  const cpf = document.getElementById('ck-cpf').value.replace(/\D/g,'');
+  if(cpf.length!==11){ document.getElementById('ck-cpf').classList.add('invalid'); showToast('CPF inválido.'); return; }
+  if(!validarEmail(document.getElementById('ck-email').value)){ document.getElementById('ck-email').classList.add('invalid'); showToast('E-mail inválido.'); return; }
+  ckMostrarPasso(2);
+}
+ 
+function ckPasso3(){
+  if(metodoPag !== 'pix'){
+    const num = document.getElementById('ck-card-num').value.replace(/\D/g,'');
+    const nome = document.getElementById('ck-card-nome').value.trim();
+    const val = document.getElementById('ck-card-val').value;
+    const cvv = document.getElementById('ck-card-cvv').value;
+    if(num.length<16||!nome||val.length<5||cvv.length<3){
+      showToast('Preencha todos os dados do cartão.'); return;
+    }
+  }
+  const subtotal = carrinhoItens.reduce((s,i)=>s+i.preco*i.qty,0);
+  const frete = subtotal>=150?0:19.90;
+  const total = subtotal+frete;
+ 
+  // endereço
+  const end = `${document.getElementById('ck-rua').value}, ${document.getElementById('ck-numero').value}` +
+    (document.getElementById('ck-comp').value ? ' — '+document.getElementById('ck-comp').value : '') +
+    `, ${document.getElementById('ck-bairro').value}, ${document.getElementById('ck-cidade').value}/${document.getElementById('ck-estado').value} — CEP ${document.getElementById('ck-cep').value}`;
+ 
+  let pagHtml = '';
+  if(metodoPag==='pix'){
+    pagHtml = '⚡ <strong>Pix</strong>';
+  } else {
+    const ult4 = document.getElementById('ck-card-num').value.replace(/\D/g,'').slice(-4);
+    const parc = document.getElementById('ck-parcelas').value;
+    pagHtml = `💳 <strong>${metodoPag==='credito'?'Crédito':'Débito'}</strong> — •••• ${ult4}` +
+      (metodoPag==='credito'?` — ${parc}×`:'');
+  }
+ 
+  document.getElementById('ck-review-content').innerHTML = `
+    <div class="review-block">
+      <div class="review-title">📦 Entrega</div>
+      <strong>${document.getElementById('ck-nome').value}</strong><br>
+      CPF: ${document.getElementById('ck-cpf').value}<br>
+      ${end}<br>
+      📞 ${document.getElementById('ck-tel').value} &nbsp;·&nbsp; ✉️ ${document.getElementById('ck-email').value}
+    </div>
+    <div class="review-block">
+      <div class="review-title">🛍️ Itens (${carrinhoItens.reduce((s,i)=>s+i.qty,0)} produtos)</div>
+      ${carrinhoItens.map(i=>`
+        <div class="review-item-row">
+          <span>${i.emoji} ${i.nome} × ${i.qty}</span>
+          <span style="font-weight:800;color:var(--primary)">${fmtPreco(i.preco*i.qty)}</span>
+        </div>`).join('')}
+      <div class="review-item-row" style="color:var(--muted)">
+        <span>Frete</span><span>${frete===0?'Grátis':fmtPreco(frete)}</span>
+      </div>
+      <div class="review-item-row" style="font-size:15px;font-weight:800;color:var(--primary)">
+        <span>Total</span><span>${fmtPreco(total)}</span>
+      </div>
+    </div>
+    <div class="review-block">
+      <div class="review-title">💳 Pagamento</div>
+      ${pagHtml}
+    </div>`;
+  ckMostrarPasso(3);
+}
+ 
+function confirmarPedido(){
+  const db = getDB();
+  if(!db.pedidos) db.pedidos = [];
+  const subtotal = carrinhoItens.reduce((s,i)=>s+i.preco*i.qty,0);
+  const frete = subtotal>=150?0:19.90;
+  const codigo = 'PZ-' + Date.now().toString(36).toUpperCase().slice(-8);
+  db.pedidos.push({
+    id: codigo, userId: eu?.id,
+    itens: JSON.parse(JSON.stringify(carrinhoItens)),
+    subtotal, frete, total: subtotal+frete,
+    pagamento: metodoPag,
+    endNome: document.getElementById('ck-nome').value,
+    endCEP: document.getElementById('ck-cep').value,
+    endCidade: document.getElementById('ck-cidade').value,
+    data: new Date().toISOString(), status: 'Confirmado'
+  });
+  saveDB(db);
+  // limpar carrinho
+  carrinhoItens = []; atualizarCartUI();
+  // mostrar sucesso
+  document.getElementById('ck-order-num').textContent = codigo;
+  [1,2,3].forEach(i=>document.getElementById('ck-passo-'+i).style.display='none');
+  document.getElementById('ck-steps').style.display = 'none';
+  document.getElementById('ck-sucesso').style.display = 'block';
+  document.getElementById('ck-modal-title').textContent = '🎉 Pedido realizado!';
+  showToast('Pedido confirmado! '+codigo+' 🎉');
+}
+ 
+// ------- MODAL NOVO PET -------
+function abrirModalPet(){
   document.getElementById('modal-pet').classList.add('open');
   document.querySelectorAll('#np-cores .color-opt').forEach(o=>o.classList.remove('selected'));
   corNovoPet='';
@@ -1047,250 +1739,279 @@ function abrirModalPet() {
   document.getElementById('np-especie').value='';
 }
 function fecharModal(id){ document.getElementById(id).classList.remove('open'); }
-
 document.querySelectorAll('#np-cores .color-opt').forEach(opt=>{
   opt.addEventListener('click',()=>{
     document.querySelectorAll('#np-cores .color-opt').forEach(o=>o.classList.remove('selected'));
     opt.classList.add('selected'); corNovoPet=opt.dataset.cor;
   });
 });
-
-function salvarNovoPet() {
-  const nome=document.getElementById('np-nome').value.trim();
-  const esp=document.getElementById('np-especie').value;
+function salvarNovoPet(){
+  const nome=document.getElementById('np-nome').value.trim(),esp=document.getElementById('np-especie').value;
   if(!nome){ showToast('Informe o nome do pet.'); return; }
-  if(!esp){  showToast('Selecione a espécie do pet.'); return; }
+  if(!esp){ showToast('Selecione a espécie do pet.'); return; }
   const db=getDB();
-  const novoPet={
-    id:'p_'+Date.now(), userId:eu.id, nome, especie:esp,
-    raca:document.getElementById('np-raca').value,
-    sexo:document.getElementById('np-sexo').value,
-    nasc:document.getElementById('np-nasc').value,
-    peso:document.getElementById('np-peso').value,
-    porte:document.getElementById('np-porte').value,
-    castrado:document.getElementById('np-cast').value,
-    chip:document.getElementById('np-chip').value,
-    cor:corNovoPet,
-    obs:document.getElementById('np-obs').value,
-  };
-  db.pets.push(novoPet);
-  saveDB(db);
+  const novoPet={id:'p_'+Date.now(),userId:eu.id,nome,especie:esp,raca:document.getElementById('np-raca').value,sexo:document.getElementById('np-sexo').value,nasc:document.getElementById('np-nasc').value,peso:document.getElementById('np-peso').value,porte:document.getElementById('np-porte').value,castrado:document.getElementById('np-cast').value,chip:document.getElementById('np-chip').value,cor:corNovoPet,obs:document.getElementById('np-obs').value};
+  db.pets.push(novoPet); saveDB(db);
   fecharModal('modal-pet');
   showToast(nome+' cadastrado(a) com sucesso! 🐾');
   petAtual=novoPet.id;
-  goto('pets', document.querySelector('.nav-item.active'));
+  goto('pets',document.querySelector('.nav-item.active'));
   renderPets();
 }
-
-// -------- ADM --------
-function renderAdmUsuarios() {
+ 
+// ------- ADM -------
+function renderAdmUsuarios(){
   const db=getDB();
   document.getElementById('adm-cards').innerHTML=`
     <div class="stat-card"><div class="stat-icon si-blue">👥</div><div><div class="stat-label">Tutores</div><div class="stat-val">${db.usuarios.length}</div></div></div>
     <div class="stat-card"><div class="stat-icon si-green">🐾</div><div><div class="stat-label">Animais</div><div class="stat-val">${db.pets.length}</div></div></div>
     <div class="stat-card"><div class="stat-icon si-amber">💉</div><div><div class="stat-label">Vacinas</div><div class="stat-val">${db.vacinas.length}</div></div></div>
     <div class="stat-card"><div class="stat-icon si-pink">📅</div><div><div class="stat-label">Consultas</div><div class="stat-val">${db.consultas.length}</div></div></div>`;
-  const cont=document.getElementById('adm-usuarios-table');
-  cont.innerHTML=db.usuarios.length?`<table><thead><tr><th>Nome</th><th>E-mail</th><th>Pets</th><th>Vacinas</th><th>Consultas</th></tr></thead><tbody>${db.usuarios.map(u=>{
-    const pts=db.pets.filter(p=>p.userId===u.id);
-    return`<tr><td>${u.nome}</td><td>${u.email}</td><td>${pts.length}</td><td>${db.vacinas.filter(v=>pts.some(p=>p.id===v.petId)).length}</td><td>${db.consultas.filter(c=>pts.some(p=>p.id===c.petId)).length}</td></tr>`;
-  }).join('')}</tbody></table>`:vazio('Nenhum tutor cadastrado ainda.');
+  document.getElementById('adm-usuarios-table').innerHTML=db.usuarios.length?`<table><thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Pets</th><th>Vacinas</th><th>Consultas</th></tr></thead><tbody>${db.usuarios.map(u=>{const pts=db.pets.filter(p=>p.userId===u.id);return`<tr><td>${u.nome}</td><td>${u.email}</td><td>${u.telefone||'—'}</td><td>${pts.length}</td><td>${db.vacinas.filter(v=>pts.some(p=>p.id===v.petId)).length}</td><td>${db.consultas.filter(c=>pts.some(p=>p.id===c.petId)).length}</td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhum tutor cadastrado ainda.');
 }
-
-function renderAdmPets() {
+function renderAdmPets(){
   const db=getDB();
-  document.getElementById('adm-pets-table').innerHTML=db.pets.length?`<table><thead><tr><th>Animal</th><th>Espécie</th><th>Raça</th><th>Tutor</th><th>Cor</th><th>Peso</th></tr></thead><tbody>${db.pets.map(p=>{const u=db.usuarios.find(u=>u.id===p.userId);return`<tr><td>${emoji(p.especie)} ${p.nome}</td><td>${p.especie}</td><td>${p.raca||'—'}</td><td>${u?.nome||'—'}</td><td>${p.cor||'—'}</td><td>${p.peso?p.peso+' kg':'—'}</td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhum animal cadastrado ainda.');
+  document.getElementById('adm-pets-table').innerHTML=db.pets.length?`<table><thead><tr><th>Animal</th><th>Espécie</th><th>Raça</th><th>Tutor</th><th>Peso</th></tr></thead><tbody>${db.pets.map(p=>{const u=db.usuarios.find(u=>u.id===p.userId);return`<tr><td>${emoji(p.especie)} ${p.nome}</td><td>${p.especie}</td><td>${p.raca||'—'}</td><td>${u?.nome||'—'}</td><td>${p.peso?p.peso+' kg':'—'}</td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhum animal cadastrado ainda.');
 }
-
-function renderAdmVacinas() {
+function renderAdmVacinas(){
   const db=getDB();
-  document.getElementById('adm-vacinas-table').innerHTML=db.vacinas.length?`<table><thead><tr><th>Pet</th><th>Tutor</th><th>Vacina</th><th>Aplicação</th><th>Próxima</th><th>Veterinário</th><th>Status</th></tr></thead><tbody>${db.vacinas.map(v=>{const p=db.pets.find(p=>p.id===v.petId),u=db.usuarios.find(u=>u.id===p?.userId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${u?.nome||'—'}</td><td>${v.nome}</td><td>${v.data}</td><td>${v.prox||'—'}</td><td>${v.vet||'—'}</td><td><span class="badge ${v.status==='Em dia'?'b-ok':'b-pen'}">${v.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma vacina registrada ainda.');
+  const pend=(db.vacs_sol||[]).filter(s=>s.status==='Pendente');
+  document.getElementById('adm-vacinas-pend-table').innerHTML=pend.length?`<table><thead><tr><th>Pet</th><th>Tutor</th><th>Vacina</th><th>Vet</th><th>Data pref.</th><th>Ação</th></tr></thead><tbody>${pend.map(s=>{const p=db.pets.find(x=>x.id===s.petId),u=db.usuarios.find(x=>x.id===p?.userId),vet=db.veterinarios&&db.veterinarios.find(v=>v.id===s.vetId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${u?.nome||'—'}</td><td>${s.vacina}</td><td>${vet?.nome||'—'}</td><td>${fmtData(s.dataPref)}</td><td><button class="btn-sm" style="font-size:11px" onclick="abrirRegistroVacVet('${s.id}')">Registrar</button></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma solicitação pendente.');
+  document.getElementById('adm-vacinas-table').innerHTML=db.vacinas.length?`<table><thead><tr><th>Pet</th><th>Tutor</th><th>Vacina</th><th>Aplicação</th><th>Próxima</th><th>Vet</th><th>Status</th></tr></thead><tbody>${db.vacinas.map(v=>{const p=db.pets.find(p=>p.id===v.petId),u=db.usuarios.find(u=>u.id===p?.userId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${u?.nome||'—'}</td><td>${v.nome}</td><td>${fmtData(v.data)}</td><td>${fmtData(v.prox)}</td><td>${v.vet||'—'}</td><td><span class="badge b-ok">${v.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma vacina registrada ainda.');
 }
-
-function renderAdmConsultas() {
+function renderAdmConsultas(){
   const db=getDB();
-  document.getElementById('adm-consultas-table').innerHTML=db.consultas.length?`<table><thead><tr><th>Pet</th><th>Tutor</th><th>Tipo</th><th>Data</th><th>Horário</th><th>Veterinário</th><th>Status</th></tr></thead><tbody>${db.consultas.map(c=>{const p=db.pets.find(p=>p.id===c.petId),u=db.usuarios.find(u=>u.id===p?.userId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${u?.nome||'—'}</td><td>${c.tipo}</td><td>${c.data}</td><td>${c.hora}</td><td>${c.vet}</td><td><span class="badge ${c.status==='Agendada'?'b-pen':'b-ok'}">${c.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma consulta registrada ainda.');
+  document.getElementById('adm-consultas-table').innerHTML=db.consultas.length?`<table><thead><tr><th>Pet</th><th>Tutor</th><th>Tipo</th><th>Data</th><th>Horário</th><th>Veterinário</th><th>Status</th></tr></thead><tbody>${db.consultas.map(c=>{const p=db.pets.find(p=>p.id===c.petId),u=db.usuarios.find(u=>u.id===p?.userId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${u?.nome||'—'}</td><td>${c.tipo}</td><td>${fmtData(c.data)}</td><td>${c.hora}</td><td>${c.vet}</td><td><span class="badge ${c.status==='Agendada'?'b-pen':c.status==='Cancelada'?'b-cancel':'b-ok'}">${c.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma consulta registrada ainda.');
 }
-
-// ============================================================
-// CPF / RG HELPERS
-// ============================================================
-function validarCPF(cpf) {
-  cpf = cpf.replace(/[^\d]/g,'');
-  if(cpf.length!==11||/^(\d)\1+$/.test(cpf)) return false;
-  let s=0; for(let i=0;i<9;i++) s+=+cpf[i]*(10-i);
-  let r=11-(s%11); if(r>=10) r=0; if(r!==+cpf[9]) return false;
-  s=0; for(let i=0;i<10;i++) s+=+cpf[i]*(11-i);
-  r=11-(s%11); if(r>=10) r=0; return r===+cpf[10];
+function renderAdmVets(){
+  const db=getDB();
+  const vets=db.veterinarios||[];
+  document.getElementById('adm-vets-table').innerHTML=vets.length?`<table><thead><tr><th>Nome</th><th>Cargo</th><th>E-mail</th><th>CRMV</th><th>Especialidade</th><th>Ação</th></tr></thead><tbody>${vets.map(v=>`<tr><td>${v.nome}</td><td>${v.cargo||'—'}</td><td>${v.email}</td><td>${v.crmv||'—'}</td><td>${v.especialidade||'—'}</td><td><button class="btn-danger" style="font-size:11px;padding:.25rem .6rem" onclick="removerVet('${v.id}')">Remover</button></td></tr>`).join('')}</tbody></table>`:vazio('Nenhum profissional cadastrado. Clique em "+ Adicionar".');
 }
-
-function maskCPF(el) {
-  let v=el.value.replace(/\D/g,'').slice(0,11);
-  if(v.length>9) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9);
-  else if(v.length>6) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
-  else if(v.length>3) v=v.slice(0,3)+'.'+v.slice(3);
-  el.value=v;
+function renderAdmProdutos(){
+  const db=getDB();
+  const produtos=getDBProdutos(db);
+  document.getElementById('adm-prod-list-container').innerHTML=produtos.length?`<table><thead><tr><th>Emoji</th><th>Nome</th><th>Categoria</th><th>Descrição</th><th>Preço</th><th>Ação</th></tr></thead><tbody>${produtos.map(p=>`<tr><td>${p.emoji||'📦'}</td><td>${p.nome}</td><td>${p.categoria}</td><td>${p.desc||'—'}</td><td>${fmtPreco(p.preco)}</td><td><button class="btn-danger" style="font-size:11px;padding:.25rem .6rem" onclick="removerProduto('${p.id}')">Remover</button></td></tr>`).join('')}</tbody></table>`:vazio('Nenhum produto cadastrado.');
 }
-
-// ============================================================
-// CARRINHO
-// ============================================================
-let carrinho = [];
-
-function getCartoes() {
-  if(!eu) return [];
-  try { return JSON.parse(localStorage.getItem('pz_cartoes_'+eu.id)||'[]'); } catch(e){return[];}
-}
-function saveCartoes(c) { localStorage.setItem('pz_cartoes_'+eu.id, JSON.stringify(c)); }
-
-function adicionarAoCarrinho(prod) {
-  const idx = carrinho.findIndex(i=>i.id===prod.id);
-  if(idx>=0) carrinho[idx].qty++;
-  else carrinho.push({...prod, qty:1});
-  atualizarBadge();
-  showToast(prod.emoji+' '+prod.nome+' adicionado ao carrinho!');
-}
-
-function atualizarBadge() {
-  const total = carrinho.reduce((s,i)=>s+i.qty,0);
-  document.querySelectorAll('#cart-badge').forEach(b=>{
-    b.textContent=total;
-    b.style.display=total>0?'inline':'none';
-  });
-}
-
-function fmtBRL(v) { return 'R$ '+v.toFixed(2).replace('.',','); }
-
-function fmtCard(el) {
-  let v=el.value.replace(/\D/g,'').slice(0,16);
-  el.value=v.replace(/(\d{4})(?=\d)/g,'$1 ');
-}
-function fmtValidade(el) {
-  let v=el.value.replace(/\D/g,'').slice(0,4);
-  if(v.length>2) v=v.slice(0,2)+'/'+v.slice(2);
-  el.value=v;
-}
-
-function salvarCartao() {
-  const num=document.getElementById('card-num').value.replace(/\s/g,'');
-  const nome=document.getElementById('card-nome').value.trim();
-  const val=document.getElementById('card-val').value.trim();
-  const cvv=document.getElementById('card-cvv').value.trim();
-  const band=document.getElementById('card-band').value;
-  if(!num||num.length<13){ showToast('Número do cartão inválido.'); return; }
-  if(!nome){ showToast('Informe o nome no cartão.'); return; }
-  if(!val||val.length<5){ showToast('Validade inválida.'); return; }
-  if(!cvv||cvv.length<3){ showToast('CVV inválido.'); return; }
-  if(!band){ showToast('Selecione a bandeira.'); return; }
-  const cartoes=getCartoes();
-  cartoes.push({id:'cc_'+Date.now(), num:num.slice(-4), nome, val, band, selecionado:cartoes.length===0});
-  saveCartoes(cartoes);
-  ['card-num','card-nome','card-val','card-cvv'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('card-band').value='';
-  showToast('Cartão salvo! 💳');
-  renderCarrinho();
-}
-
-function removerCartao(id) {
-  let cartoes=getCartoes().filter(c=>c.id!==id);
-  if(cartoes.length>0 && !cartoes.some(c=>c.selecionado)) cartoes[0].selecionado=true;
-  saveCartoes(cartoes);
-  renderCarrinho();
-}
-
-function selecionarCartaoAtivo(id) {
-  const cartoes=getCartoes().map(c=>({...c,selecionado:c.id===id}));
-  saveCartoes(cartoes);
-  renderCarrinho();
-}
-
-function alterarQty(id, delta) {
-  const idx=carrinho.findIndex(i=>i.id===id);
-  if(idx<0) return;
-  carrinho[idx].qty+=delta;
-  if(carrinho[idx].qty<=0) carrinho.splice(idx,1);
-  atualizarBadge();
-  renderCarrinho();
-}
-
-function renderCarrinho() {
-  const vazio=document.getElementById('carrinho-vazio');
-  const conteudo=document.getElementById('carrinho-conteudo');
-  if(!carrinho.length){
-    vazio.style.display='block'; conteudo.style.display='none'; return;
+ 
+function abrirModalAdmVet(){ document.getElementById('modal-adm-vet').classList.add('open'); }
+function salvarVetAdm(){
+  const nome=document.getElementById('av-nome').value.trim(),email=document.getElementById('av-email').value.trim().toLowerCase(),senha=document.getElementById('av-senha').value;
+  if(!nome||!email||!senha){ lmsg('msg-adm-vet','Preencha nome, e-mail e senha.','err'); return; }
+  if(!validarEmail(email)){ lmsg('msg-adm-vet','E-mail inválido.','err'); return; }
+  const db=getDB();
+  if(!db.veterinarios) db.veterinarios=[];
+  if(db.veterinarios.find(v=>v.email===email)||db.usuarios.find(u=>u.email===email)||ADM_EMAILS.includes(email)){
+    lmsg('msg-adm-vet','E-mail já cadastrado no sistema.','err'); return;
   }
-  vazio.style.display='none'; conteudo.style.display='block';
-
-  // itens
-  document.getElementById('carrinho-itens').innerHTML=`
-    <table><thead><tr><th>Produto</th><th>Preço unit.</th><th>Qtd</th><th>Total</th><th></th></tr></thead>
-    <tbody>${carrinho.map(i=>`
-      <tr>
-        <td><span style="font-size:22px;margin-right:8px">${i.emoji}</span>${i.nome}</td>
-        <td>${fmtBRL(i.preco)}</td>
-        <td>
-          <div style="display:flex;align-items:center;gap:6px">
-            <button onclick="alterarQty('${i.id}',-1)" style="width:24px;height:24px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">−</button>
-            <span style="font-weight:700;min-width:20px;text-align:center">${i.qty}</span>
-            <button onclick="alterarQty('${i.id}',1)" style="width:24px;height:24px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">+</button>
-          </div>
-        </td>
-        <td style="font-weight:800;color:var(--primary)">${fmtBRL(i.preco*i.qty)}</td>
-        <td><button onclick="alterarQty('${i.id}',-999)" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted)" title="Remover">🗑️</button></td>
-      </tr>`).join('')}
-    </tbody></table>`;
-
-  // resumo
-  const sub=carrinho.reduce((s,i)=>s+i.preco*i.qty,0);
-  document.getElementById('resumo-sub').textContent=fmtBRL(sub);
-  document.getElementById('resumo-total').textContent=fmtBRL(sub);
-  document.getElementById('resumo-itens').innerHTML=carrinho.map(i=>`<div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span>${i.emoji} ${i.nome} x${i.qty}</span><span>${fmtBRL(i.preco*i.qty)}</span></div>`).join('');
-
-  // cartões
-  const cartoes=getCartoes();
-  const listaEl=document.getElementById('cartoes-lista');
-  listaEl.innerHTML=cartoes.length?cartoes.map(c=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:.6rem .85rem;border-radius:8px;border:0.5px solid ${c.selecionado?'var(--primary)':'var(--border)'};background:${c.selecionado?'var(--primary-light)':'var(--bg-input)'};margin-bottom:.5rem;cursor:pointer" onclick="selecionarCartaoAtivo('${c.id}')">
-      <span style="font-size:20px">💳</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--text)">${c.band} •••• ${c.num}</div><div style="font-size:11px;color:var(--muted)">${c.nome} · ${c.val}</div></div>
-      ${c.selecionado?'<span style="font-size:11px;font-weight:700;color:var(--primary)">✓ Selecionado</span>':''}
-      <button onclick="event.stopPropagation();removerCartao('${c.id}')" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--muted)" title="Remover">✕</button>
-    </div>`).join(''):'';
-
-  const payEl=document.getElementById('select-cartao-pay');
-  const sel=cartoes.find(c=>c.selecionado);
-  payEl.innerHTML=sel?`<div style="display:flex;align-items:center;gap:8px;padding:.6rem .85rem;border-radius:8px;border:0.5px solid var(--primary);background:var(--primary-light)"><span>💳</span><span style="font-weight:700;color:var(--text)">${sel.band} •••• ${sel.num}</span></div>`:`<div style="color:var(--muted);font-size:13px">Adicione e selecione um cartão acima</div>`;
+  db.veterinarios.push({id:'v_'+Date.now(),nome,email,senha,cargo:document.getElementById('av-cargo').value,crmv:document.getElementById('av-crmv').value,especialidade:document.getElementById('av-espec').value});
+  saveDB(db);
+  fecharModal('modal-adm-vet');
+  showToast('Profissional cadastrado! 🩺');
+  renderAdmVets();
 }
-
-function finalizarCompra() {
-  const cartoes=getCartoes();
-  if(!cartoes.some(c=>c.selecionado)){ showToast('Selecione um cartão para pagar!'); return; }
-  if(!carrinho.length){ showToast('Carrinho vazio!'); return; }
-  const total=carrinho.reduce((s,i)=>s+i.preco*i.qty,0);
-  const sel=cartoes.find(c=>c.selecionado);
-  carrinho=[];
-  atualizarBadge();
-  renderCarrinho();
-  showToast(`✅ Pedido realizado! ${fmtBRL(total)} debitado no ${sel.band} •••• ${sel.num}`);
-  setTimeout(()=>goto('produtos', document.querySelector('.nav-item[onclick*="produtos"]')),1500);
+function removerVet(id){
+  if(!confirm('Remover este profissional?')) return;
+  const db=getDB();
+  db.veterinarios=(db.veterinarios||[]).filter(v=>v.id!==id);
+  saveDB(db); showToast('Profissional removido.'); renderAdmVets();
 }
-
-// -------- LOGOUT --------
-function fazerLogout() {
-  eu=null; petAtual=null;
+function adicionarProdutoAdm(){
+  const nome=document.getElementById('adm-prod-nome').value.trim();
+  const cat=document.getElementById('adm-prod-cat').value;
+  const precoStr=document.getElementById('adm-prod-preco').value;
+  if(!nome||!cat||!precoStr){ showToast('Preencha nome, categoria e preço.'); return; }
+  const preco=parseFloat(precoStr);
+  if(isNaN(preco)||preco<=0){ showToast('Preço inválido.'); return; }
+  const db=getDB();
+  if(!db.produtos) db.produtos=PRODUTOS_DEFAULT.slice();
+  db.produtos.push({id:'p_'+Date.now(),nome,categoria:cat,desc:document.getElementById('adm-prod-desc').value,preco,emoji:document.getElementById('adm-prod-emoji').value||'📦'});
+  saveDB(db);
+  ['adm-prod-nome','adm-prod-desc','adm-prod-preco','adm-prod-emoji'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('adm-prod-cat').value='';
+  showToast('Produto adicionado! 🛒'); renderAdmProdutos();
+}
+function removerProduto(id){
+  if(!confirm('Remover este produto?')) return;
+  const db=getDB();
+  db.produtos=(db.produtos||PRODUTOS_DEFAULT).filter(p=>p.id!==id);
+  saveDB(db); showToast('Produto removido.'); renderAdmProdutos();
+}
+ 
+// ------- PAINEL VET -------
+function renderVetPainel(){
+  document.getElementById('vet-painel-title').textContent=`Olá, ${eu.nome}`;
+  const db=getDB();
+  const minhasCons=db.consultas.filter(c=>c.vet===eu.nome&&c.status==='Agendada');
+  const minhasSols=(db.vacs_sol||[]).filter(s=>s.vetId===eu.id&&s.status==='Pendente');
+  document.getElementById('vet-cards').innerHTML=`
+    <div class="stat-card"><div class="stat-icon si-blue">📅</div><div><div class="stat-label">Consultas hoje</div><div class="stat-val">${minhasCons.filter(c=>c.data===new Date().toISOString().split('T')[0]).length}</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-amber">💉</div><div><div class="stat-label">Vacinações pend.</div><div class="stat-val">${minhasSols.length}</div></div></div>
+    <div class="stat-card"><div class="stat-icon si-green">📋</div><div><div class="stat-label">Total agendadas</div><div class="stat-val">${minhasCons.length}</div></div></div>`;
+  // consultas
+  document.getElementById('vet-consultas-table').innerHTML=minhasCons.length?`<table><thead><tr><th>Pet</th><th>Tutor</th><th>Tipo</th><th>Data</th><th>Horário</th><th>Motivo</th><th>Status</th></tr></thead><tbody>${minhasCons.map(c=>{const p=db.pets.find(x=>x.id===c.petId),u=db.usuarios.find(x=>x.id===p?.userId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${u?.nome||'—'}</td><td>${c.tipo}</td><td>${fmtData(c.data)}</td><td>${c.hora}</td><td>${c.motivo||'—'}</td><td><span class="badge b-pen">${c.status}</span></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma consulta agendada para você.');
+  // solicitações vacinação
+  document.getElementById('vet-vac-pend-table').innerHTML=minhasSols.length?`<table><thead><tr><th>Pet</th><th>Tutor</th><th>Vacina</th><th>Data pref.</th><th>Obs.</th><th>Ação</th></tr></thead><tbody>${minhasSols.map(s=>{const p=db.pets.find(x=>x.id===s.petId),u=db.usuarios.find(x=>x.id===p?.userId);return`<tr><td>${emoji(p?.especie)} ${p?.nome||'—'}</td><td>${u?.nome||'—'}</td><td>${s.vacina}</td><td>${fmtData(s.dataPref)}</td><td>${s.obs||'—'}</td><td><button class="btn-sm" style="font-size:11px" onclick="abrirRegistroVacVet('${s.id}')">Registrar</button></td></tr>`;}).join('')}</tbody></table>`:vazio('Nenhuma solicitação de vacinação pendente.');
+}
+ 
+function abrirRegistroVacVet(solId){
+  const db=getDB();
+  const s=(db.vacs_sol||[]).find(x=>x.id===solId);
+  if(!s) return;
+  const p=db.pets.find(x=>x.id===s.petId),u=db.usuarios.find(x=>x.id===p?.userId);
+  document.getElementById('vac-vet-req-id').value=solId;
+  document.getElementById('vac-vet-req-info').textContent=`Solicitação: ${p?.nome||'—'} (tutor: ${u?.nome||'—'}) — ${s.vacina} — Pref.: ${fmtData(s.dataPref)}`;
+  document.getElementById('vv-nome').value=s.vacina;
+  document.getElementById('vv-data').value='';
+  document.getElementById('vv-prox').value='';
+  document.getElementById('vv-lote').value='';
+  document.getElementById('vv-obs').value='';
+  document.getElementById('modal-vac-vet').classList.add('open');
+}
+ 
+function registrarVacinaVet(){
+  const solId=document.getElementById('vac-vet-req-id').value;
+  const nome=document.getElementById('vv-nome').value.trim();
+  const data=document.getElementById('vv-data').value;
+  if(!nome||!data){ showToast('Preencha vacina e data de aplicação.'); return; }
+  const db=getDB();
+  const sol=(db.vacs_sol||[]).find(x=>x.id===solId);
+  if(!sol){ showToast('Solicitação não encontrada.'); return; }
+  const pet=db.pets.find(x=>x.id===sol.petId);
+  const vetObj=eu.tipo==='vet'?eu:db.veterinarios&&db.veterinarios.find(v=>v.id===sol.vetId);
+  db.vacinas.push({id:'vac_'+Date.now(),petId:sol.petId,nome,data,prox:document.getElementById('vv-prox').value,vet:vetObj?.nome||eu.nome,lote:document.getElementById('vv-lote').value,obs:document.getElementById('vv-obs').value,status:'Em dia'});
+  const si=db.vacs_sol.findIndex(x=>x.id===solId);
+  if(si>=0){
+    db.vacs_sol[si].status='Aceita';
+    db.vacs_sol[si].dataAceite=new Date().toISOString().split('T')[0];
+    db.vacs_sol[si].vacinaAplicada=nome;
+    db.vacs_sol[si].dataAplicacao=data;
+    db.vacs_sol[si].lote=document.getElementById('vv-lote').value;
+    db.vacs_sol[si].obsVet=document.getElementById('vv-obs').value;
+  }
+  saveDB(db);
+  fecharModal('modal-vac-vet');
+  showToast('Vacinação registrada com sucesso! 💉');
+  if(eu.tipo==='vet') renderVetPainel();
+  else renderAdmVacinas();
+}
+ 
+// ------- LOGOUT -------
+function fazerLogout(){
+  eu=null; petAtual=null; cartCount=0; carrinhoItens=[];
+  sessionStorage.removeItem('pz_session');
   document.getElementById('tela-dashboard').style.display='none';
   document.getElementById('tela-login').style.display='flex';
-  document.body.style.background = darkMode
-    ? 'linear-gradient(135deg,#0f1e2a 0%,#071016 100%)'
-    : 'linear-gradient(135deg,#2a5f7f 0%,#1a3f5c 100%)';
-  document.getElementById('login-email').value='';
-  document.getElementById('login-senha').value='';
-  ['msg-login','msg-cadastro'].forEach(id=>{const e=document.getElementById(id);e.className='lmsg';e.textContent='';});
+  document.body.style.background=darkMode?'linear-gradient(135deg,#0f1e2a 0%,#071016 100%)':'linear-gradient(135deg,#2a5f7f 0%,#1a3f5c 100%)';
+  showForm('login');
 }
-
-// -------- TOAST --------
+ 
+// ------- TOAST -------
 let toastTimer;
-function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3000); }
+function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3500); }
 </script>
+ 
+<!-- ===== MODAL CHECKOUT ===== -->
+<div class="modal-bg" id="modal-checkout">
+  <div class="modal-box" style="max-width:620px">
+    <div class="modal-head">
+      <h3 id="ck-modal-title">🛍️ Finalizar compra</h3>
+      <button class="modal-close" onclick="fecharModal('modal-checkout')">×</button>
+    </div>
+ 
+    <!-- Steps indicator -->
+    <div class="ck-steps" id="ck-steps">
+      <div class="ck-step active" id="ck-step-lbl-1">1. Endereço</div>
+      <div class="ck-step" id="ck-step-lbl-2">2. Pagamento</div>
+      <div class="ck-step" id="ck-step-lbl-3">3. Revisão</div>
+    </div>
+ 
+    <!-- PASSO 1: Endereço e dados pessoais -->
+    <div id="ck-passo-1">
+      <div class="form-grid">
+        <div class="f span2"><label>Nome completo *</label><input id="ck-nome" placeholder="Nome do destinatário"/></div>
+        <div class="f"><label>CPF *</label><input id="ck-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)"/></div>
+        <div class="f"><label>Telefone *</label><input id="ck-tel" placeholder="(11) 99999-9999" maxlength="15" oninput="formatarTelefone(this)"/></div>
+        <div class="f"><label>E-mail *</label><input type="email" id="ck-email" placeholder="seu@email.com"/></div>
+        <div class="f"><label>CEP *</label><input id="ck-cep" placeholder="00000-000" maxlength="9" oninput="maskCEP(this)" onblur="buscarCEP()"/></div>
+        <div class="f"><label>Estado</label><input id="ck-estado" placeholder="SP" maxlength="2"/></div>
+        <div class="f"><label>Cidade *</label><input id="ck-cidade" placeholder="São Paulo"/></div>
+        <div class="f span2"><label>Bairro *</label><input id="ck-bairro" placeholder="Bairro"/></div>
+        <div class="f span2"><label>Endereço *</label><input id="ck-rua" placeholder="Rua, Avenida, Travessa..."/></div>
+        <div class="f"><label>Número *</label><input id="ck-numero" placeholder="123"/></div>
+        <div class="f"><label>Complemento</label><input id="ck-comp" placeholder="Apto, Bloco... (opcional)"/></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:8px">
+        <button class="btn-primary" style="flex:1;margin-bottom:0" onclick="ckPasso2()">Próximo: Pagamento →</button>
+      </div>
+    </div>
+ 
+    <!-- PASSO 2: Pagamento -->
+    <div id="ck-passo-2" style="display:none">
+      <div class="pay-method-tabs">
+        <div class="pay-tab active" id="ptab-credito" onclick="selecionarPagamento('credito')">💳 Crédito</div>
+        <div class="pay-tab" id="ptab-debito" onclick="selecionarPagamento('debito')">🏦 Débito</div>
+        <div class="pay-tab" id="ptab-pix" onclick="selecionarPagamento('pix')">⚡ Pix</div>
+      </div>
+ 
+      <div id="pay-cartao">
+        <div class="card-visual">
+          <div class="cv-chip">💳</div>
+          <div class="cv-num" id="cv-num-display">•••• •••• •••• ••••</div>
+          <div class="cv-bottom">
+            <div><span class="cv-label">Titular</span><span id="cv-nome-display">SEU NOME</span></div>
+            <div><span class="cv-label">Validade</span><span id="cv-val-display">MM/AA</span></div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="f span2"><label>Número do cartão *</label><input id="ck-card-num" placeholder="0000 0000 0000 0000" maxlength="19" oninput="maskCartao(this)"/></div>
+          <div class="f span2"><label>Nome impresso no cartão *</label><input id="ck-card-nome" placeholder="COMO ESTÁ NO CARTÃO" style="text-transform:uppercase" oninput="document.getElementById('cv-nome-display').textContent=this.value.toUpperCase()||'SEU NOME'"/></div>
+          <div class="f"><label>Validade *</label><input id="ck-card-val" placeholder="MM/AA" maxlength="5" oninput="maskValidade(this)"/></div>
+          <div class="f"><label>CVV *</label><input id="ck-card-cvv" placeholder="•••" maxlength="4" type="password"/></div>
+        </div>
+        <div class="f" id="parcelas-wrap" style="margin-top:.85rem">
+          <label>Parcelamento</label>
+          <select id="ck-parcelas"></select>
+        </div>
+      </div>
+ 
+      <div id="pay-pix-area" style="display:none">
+        <div class="pix-area">
+          <div class="pix-icon">⚡</div>
+          <div class="pix-amount" id="pix-valor-display">R$ 0,00</div>
+          <div class="pix-desc">Após confirmar o pedido, você receberá o QR Code e a chave Pix para pagamento.<br>O prazo para pagamento é de <strong>30 minutos</strong>.</div>
+          <div class="pix-key">🔑 Chave: 00.000.000/0001-00 (CNPJ)</div>
+        </div>
+      </div>
+ 
+      <div style="margin-top:1.25rem;display:flex;gap:8px">
+        <button class="btn-outline" onclick="ckVoltar(1)">← Voltar</button>
+        <button class="btn-primary" style="flex:1;margin-bottom:0" onclick="ckPasso3()">Revisar pedido →</button>
+      </div>
+    </div>
+ 
+    <!-- PASSO 3: Revisão -->
+    <div id="ck-passo-3" style="display:none">
+      <div id="ck-review-content"></div>
+      <div style="margin-top:1rem;display:flex;gap:8px">
+        <button class="btn-outline" onclick="ckVoltar(2)">← Voltar</button>
+        <button class="btn-primary" style="flex:1;margin-bottom:0" onclick="confirmarPedido()">✅ Confirmar pedido</button>
+      </div>
+    </div>
+ 
+    <!-- SUCESSO -->
+    <div id="ck-sucesso" style="display:none">
+      <div class="success-wrap">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Pedido confirmado!</div>
+        <div class="success-sub">Seu pedido foi realizado com sucesso.<br>Você receberá atualizações por e-mail.</div>
+        <div class="order-num" id="ck-order-num">PZ-000000</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:1.25rem">Guarde este código para rastreamento.</div>
+        <button class="btn-sm" onclick="fecharModal('modal-checkout');irLoja()">Continuar comprando</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
 </body>
 </html>
