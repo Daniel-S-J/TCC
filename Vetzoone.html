@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -331,6 +330,14 @@ body.dark .card-visual{background:linear-gradient(135deg,#0e2233,#071016);}
 .success-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:.5rem;}
 .success-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:1.25rem;}
 .order-num{display:inline-block;background:var(--primary-light);color:var(--primary);font-size:15px;font-weight:800;letter-spacing:2px;padding:.5rem 1.25rem;border-radius:10px;margin-bottom:1.25rem;}
+
+/* ===== FORNECEDORES CHAT ===== */
+.forn-chat-bubble{max-width:80%;padding:.55rem .9rem;border-radius:12px;font-size:13px;line-height:1.5;word-break:break-word;}
+.forn-bubble-adm{align-self:flex-end;background:var(--primary);color:#fff;border-bottom-right-radius:3px;}
+.forn-bubble-forn{align-self:flex-start;background:var(--bg-card);border:.5px solid var(--border);color:var(--text);border-bottom-left-radius:3px;}
+.forn-bubble-meta{font-size:10px;opacity:.65;margin-top:2px;}
+.forn-bubble-adm .forn-bubble-meta{text-align:right;}
+.forn-badge-cat{font-size:10px;font-weight:700;border-radius:20px;padding:1px 8px;background:var(--primary-light);color:var(--primary);margin-left:6px;}
 </style>
 </head>
 <body>
@@ -383,6 +390,11 @@ body.dark .card-visual{background:linear-gradient(135deg,#0e2233,#071016);}
         <label>E-mail *</label>
         <input type="email" id="c-email" placeholder="seu@email.com" oninput="validarEmailCadastro()"/>
         <div class="field-hint" id="hint-email"></div>
+      </div>
+      <div class="lf">
+        <label>CPF *</label>
+        <input type="text" id="c-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)"/>
+        <div class="field-hint" id="hint-cpf"></div>
       </div>
       <div class="lf">
         <label>Telefone * <span style="font-weight:400;font-size:11px">(11–15 dígitos)</span></label>
@@ -630,8 +642,46 @@ body.dark .card-visual{background:linear-gradient(135deg,#0e2233,#071016);}
         <div class="table-card"><div class="table-head"><h3>Produtos cadastrados</h3></div><div id="adm-prod-list-container"></div></div>
       </div>
  
-      <!-- VET: PAINEL -->
-      <div class="dash-page" id="page-vet-painel">
+      
+      <!-- ADM: FORNECEDORES -->
+      <div class="dash-page" id="page-adm-fornecedores">
+        <div class="adm-banner"><div class="adm-icon">&#127981;</div><div><h3>Fornecedores</h3><p>Cadastro e comunica&ccedil;&atilde;o com fornecedores da cl&iacute;nica</p></div></div>
+        <div class="form-section">
+          <h3>&#10133; Cadastrar novo fornecedor</h3>
+          <div class="form-grid">
+            <div class="f"><label>Nome / Empresa *</label><input id="forn-nome" placeholder="ex.: PetSupply Ltda."/></div>
+            <div class="f"><label>CNPJ</label><input id="forn-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)"/></div>
+            <div class="f"><label>Respons&aacute;vel</label><input id="forn-responsavel" placeholder="Nome do contato"/></div>
+            <div class="f"><label>E-mail *</label><input type="email" id="forn-email" placeholder="contato@empresa.com"/></div>
+            <div class="f"><label>Telefone</label><input id="forn-tel" placeholder="(11) 99999-9999" maxlength="15" oninput="formatarTelefone(this)"/></div>
+            <div class="f"><label>Categoria</label>
+              <select id="forn-categoria">
+                <option value="">Selecione</option>
+                <option>Alimentos e Ra&ccedil;&otilde;es</option><option>Medicamentos</option>
+                <option>Equipamentos Cl&iacute;nicos</option><option>Higiene e Limpeza</option>
+                <option>Acess&oacute;rios e Brinquedos</option><option>Vacinas</option><option>Outros</option>
+              </select>
+            </div>
+            <div class="f span2"><label>Observa&ccedil;&otilde;es</label><textarea id="forn-obs" placeholder="Produtos fornecidos, condi&ccedil;&otilde;es de pagamento, etc."></textarea></div>
+          </div>
+          <div style="margin-top:1rem"><button class="btn-sm" onclick="adicionarFornecedor()">Cadastrar fornecedor</button></div>
+        </div>
+        <div class="table-card">
+          <div class="table-head"><h3>Fornecedores cadastrados</h3></div>
+          <div id="forn-lista-container"></div>
+        </div>
+        <div class="form-section" id="forn-chat-section" style="display:none">
+          <h3>&#128172; Chat com: <span id="forn-chat-nome" style="color:var(--primary)"></span></h3>
+          <div id="forn-chat-msgs" style="min-height:180px;max-height:320px;overflow-y:auto;background:var(--bg-input);border:.5px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:8px;"></div>
+          <div style="display:flex;gap:8px">
+            <input id="forn-chat-input" class="shop-search" placeholder="Digite sua mensagem..." style="flex:1" onkeydown="if(event.key==='Enter')enviarMsgFornecedor()"/>
+            <button class="btn-sm" onclick="enviarMsgFornecedor()">Enviar</button>
+          </div>
+          <div style="margin-top:.6rem"><button class="btn-outline" style="font-size:11px" onclick="fecharChatFornecedor()">&larr; Voltar para lista</button></div>
+        </div>
+      </div>
+
+      <!-- VET: PAINEL -->      <div class="dash-page" id="page-vet-painel">
         <div class="vet-banner"><div class="adm-icon">🩺</div><div><h3 id="vet-painel-title">Painel do Veterinário</h3><p>Suas consultas e solicitações de vacinação</p></div></div>
         <div class="cards-grid" id="vet-cards"></div>
         <div class="table-card"><div class="table-head"><h3>Minhas consultas agendadas</h3></div><div id="vet-consultas-table"></div></div>
@@ -904,14 +954,17 @@ function handleVetLogin(){
  
 function handleCadastro(){
   const nome=document.getElementById('c-nome'),sobre=document.getElementById('c-sobrenome'),
-        email=document.getElementById('c-email'),tel=document.getElementById('c-telefone'),
+        email=document.getElementById('c-email'),cpf=document.getElementById('c-cpf'),
+        tel=document.getElementById('c-telefone'),
         senha=document.getElementById('c-senha'),senha2=document.getElementById('c-senha2'),
         termos=document.getElementById('termos');
-  [nome,email,senha,senha2,tel].forEach(el=>el.classList.remove('invalid'));
+  [nome,email,cpf,senha,senha2,tel].forEach(el=>el.classList.remove('invalid'));
   let ok=true;
-  [nome,email,senha,senha2].forEach(el=>{ if(!el.value.trim()){el.classList.add('invalid');ok=false;} });
+  [nome,email,cpf,senha,senha2].forEach(el=>{ if(!el.value.trim()){el.classList.add('invalid');ok=false;} });
   if(!ok){ lmsg('msg-cadastro','Preencha todos os campos obrigatórios.','err'); return; }
   if(!validarEmail(email.value)){ email.classList.add('invalid'); lmsg('msg-cadastro','E-mail inválido.','err'); return; }
+  const cpfNums=cpf.value.replace(/\D/g,'');
+  if(cpfNums.length!==11){ cpf.classList.add('invalid'); lmsg('msg-cadastro','CPF inválido.','err'); return; }
   const telNums=tel.value.replace(/\D/g,'');
   if(!tel.value.trim()||telNums.length<11||telNums.length>15){ tel.classList.add('invalid'); lmsg('msg-cadastro','Telefone inválido (11–15 dígitos).','err'); return; }
   if(senha.value!==senha2.value){ senha.classList.add('invalid'); senha2.classList.add('invalid'); lmsg('msg-cadastro','As senhas não coincidem.','err'); return; }
@@ -920,7 +973,7 @@ function handleCadastro(){
   if(ADM_EMAILS.includes(emailVal)){ lmsg('msg-cadastro','Este e-mail não pode ser cadastrado.','err'); return; }
   const db=getDB();
   if(db.usuarios.find(u=>u.email===emailVal)){ lmsg('msg-cadastro','E-mail já cadastrado. Faça login.','err'); return; }
-  const novoUser={id:'u_'+Date.now(),nome:(nome.value.trim()+' '+sobre.value.trim()).trim(),email:emailVal,senha:senha.value,telefone:tel.value,telefone2:document.getElementById('c-telefone2').value,isAdm:false,tipo:'tutor'};
+  const novoUser={id:'u_'+Date.now(),nome:(nome.value.trim()+' '+sobre.value.trim()).trim(),email:emailVal,cpf:cpf.value,senha:senha.value,telefone:tel.value,telefone2:document.getElementById('c-telefone2').value,isAdm:false,tipo:'tutor'};
   db.usuarios.push(novoUser);
   const petNome=document.getElementById('c-pet').value.trim(), especie=document.getElementById('c-especie').value;
   if(petNome&&especie) db.pets.push({id:'p_'+Date.now(),userId:novoUser.id,nome:petNome,especie,raca:'',sexo:'Macho',nasc:'',peso:'',porte:'Médio',castrado:'Não',chip:'',cor:'',obs:''});
@@ -952,6 +1005,7 @@ function entrarDashboard(fromSession=false){
       <div class="nav-item" onclick="goto('adm-vacinas',this)"><span class="icon">💉</span> Vacinações</div>
       <div class="nav-item" onclick="goto('adm-consultas',this)"><span class="icon">📅</span> Consultas</div>
       <div class="nav-item" onclick="goto('adm-vets',this)"><span class="icon">🩺</span> Veterinários</div>
+      <div class="nav-item" onclick="goto('adm-fornecedores',this)"><span class="icon">🏭</span> Fornecedores</div>
       <div class="nav-section">Loja</div>
       <div class="nav-item" onclick="goto('adm-produtos',this)"><span class="icon">🛒</span> Gerenciar Produtos</div>
       <div class="nav-item" onclick="goto('produtos',this)"><span class="icon">🏪</span> Ver Loja</div>
@@ -997,6 +1051,7 @@ const cfgPages={
   'adm-vacinas':{title:'Vacinações',btn:'',show:false},
   'adm-consultas':{title:'Todas as consultas',btn:'',show:false},
   'adm-vets':{title:'Veterinários & Funcionários',btn:'',show:false},
+  'adm-fornecedores':{title:'Fornecedores',btn:'',show:false},
   'adm-produtos':{title:'Gerenciar Produtos',btn:'',show:false},
   'vet-painel':{title:'Meu Painel',btn:'',show:false},
 };
@@ -1036,6 +1091,7 @@ function renderPage(id){
     consultas:renderConsultas,produtos:renderProdutos,carrinho:renderCarrinho,
     'adm-usuarios':renderAdmUsuarios,'adm-pets':renderAdmPets,'adm-vacinas':renderAdmVacinas,
     'adm-consultas':renderAdmConsultas,'adm-vets':renderAdmVets,'adm-produtos':renderAdmProdutos,
+    'adm-fornecedores':renderAdmFornecedores,
     'vet-painel':renderVetPainel};
   if(mapa[id]) mapa[id]();
 }
@@ -1906,6 +1962,139 @@ function fazerLogout(){
   showForm('login');
 }
  
+
+// ===== FORNECEDORES =====
+let fornChatAtivo = null;
+
+function maskCNPJ(el){
+  let v=el.value.replace(/\D/g,'').slice(0,14);
+  v=v.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{2}\.(\d{3}))(\d)/,'$1.$2')
+     .replace(/(\d{2}\.\d{3}\.\d{3})(\d)/,'$1/$2').replace(/(\d{2}\.\d{3}\.\d{3}\/\d{4})(\d)/,'$1-$2');
+  el.value=v;
+}
+
+function adicionarFornecedor(){
+  const nome=document.getElementById('forn-nome').value.trim();
+  const email=document.getElementById('forn-email').value.trim();
+  if(!nome||!email){ showToast('Preencha nome e e-mail do fornecedor.'); return; }
+  if(!validarEmail(email)){ showToast('E-mail inválido.'); return; }
+  const db=getDB();
+  if(!db.fornecedores) db.fornecedores=[];
+  if(db.fornecedores.find(f=>f.email===email.toLowerCase())){ showToast('Fornecedor já cadastrado com este e-mail.'); return; }
+  const novo={
+    id:'f_'+Date.now(),
+    nome,
+    cnpj:document.getElementById('forn-cnpj').value,
+    responsavel:document.getElementById('forn-responsavel').value.trim(),
+    email:email.toLowerCase(),
+    telefone:document.getElementById('forn-tel').value,
+    categoria:document.getElementById('forn-categoria').value,
+    obs:document.getElementById('forn-obs').value.trim(),
+    mensagens:[]
+  };
+  db.fornecedores.push(novo);
+  saveDB(db);
+  ['forn-nome','forn-cnpj','forn-responsavel','forn-email','forn-tel','forn-obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('forn-categoria').value='';
+  showToast('Fornecedor cadastrado! 🏭');
+  renderAdmFornecedores();
+}
+
+function renderAdmFornecedores(){
+  const db=getDB();
+  const fornecedores=db.fornecedores||[];
+  const el=document.getElementById('forn-lista-container');
+  if(!fornecedores.length){ el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Nenhum fornecedor cadastrado ainda.</div>'; return; }
+  el.innerHTML=`<table><thead><tr><th>Empresa</th><th>Responsável</th><th>E-mail</th><th>Telefone</th><th>Categoria</th><th>Mensagens</th><th>Ações</th></tr></thead><tbody>${
+    fornecedores.map(f=>{
+      const msgs=(f.mensagens||[]).length;
+      const naoLidas=(f.mensagens||[]).filter(m=>m.de==='forn'&&!m.lida).length;
+      return `<tr>
+        <td><strong>${f.nome}</strong>${f.cnpj?`<br><span style="font-size:11px;color:var(--muted)">${f.cnpj}</span>`:''}
+        </td>
+        <td>${f.responsavel||'—'}</td>
+        <td>${f.email}</td>
+        <td>${f.telefone||'—'}</td>
+        <td>${f.categoria?`<span class="forn-badge-cat">${f.categoria}</span>`:'—'}</td>
+        <td style="text-align:center">
+          <span style="font-weight:700;color:var(--text)">${msgs}</span>
+          ${naoLidas>0?`<span class="badge b-sol" style="margin-left:4px">${naoLidas} nova${naoLidas>1?'s':''}</span>`:''}
+        </td>
+        <td>
+          <button class="btn-sm" style="font-size:11px;margin-right:4px" onclick="abrirChatFornecedor('${f.id}')">💬 Chat</button>
+          <button class="btn-danger" style="font-size:11px" onclick="removerFornecedor('${f.id}')">Remover</button>
+        </td>
+      </tr>`;
+    }).join('')
+  }</tbody></table>`;
+}
+
+function abrirChatFornecedor(fornId){
+  const db=getDB();
+  const f=(db.fornecedores||[]).find(x=>x.id===fornId);
+  if(!f) return;
+  // marcar como lidas
+  if(f.mensagens) f.mensagens.forEach(m=>{ if(m.de==='forn') m.lida=true; });
+  saveDB(db);
+  fornChatAtivo=fornId;
+  document.getElementById('forn-chat-nome').textContent=f.nome;
+  document.getElementById('forn-chat-section').style.display='block';
+  document.getElementById('forn-chat-input').value='';
+  renderChatFornecedor(f);
+  document.getElementById('forn-chat-section').scrollIntoView({behavior:'smooth'});
+}
+
+function fecharChatFornecedor(){
+  fornChatAtivo=null;
+  document.getElementById('forn-chat-section').style.display='none';
+  renderAdmFornecedores();
+}
+
+function renderChatFornecedor(f){
+  const msgs=f.mensagens||[];
+  const el=document.getElementById('forn-chat-msgs');
+  if(!msgs.length){
+    el.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;margin:auto">Nenhuma mensagem ainda. Inicie a conversa!</div>';
+    return;
+  }
+  el.innerHTML=msgs.map(m=>{
+    const isAdm=m.de==='adm';
+    const hora=m.hora||'';
+    return `<div style="display:flex;flex-direction:column;align-items:${isAdm?'flex-end':'flex-start'}">
+      <div class="forn-chat-bubble ${isAdm?'forn-bubble-adm':'forn-bubble-forn'}">${m.texto}</div>
+      <div class="forn-bubble-meta" style="align-self:${isAdm?'flex-end':'flex-start'}">${isAdm?'ADM':'Fornecedor'} · ${hora}</div>
+    </div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function enviarMsgFornecedor(){
+  const input=document.getElementById('forn-chat-input');
+  const texto=input.value.trim();
+  if(!texto||!fornChatAtivo){ showToast('Digite uma mensagem.'); return; }
+  const db=getDB();
+  const fi=(db.fornecedores||[]).findIndex(x=>x.id===fornChatAtivo);
+  if(fi<0) return;
+  if(!db.fornecedores[fi].mensagens) db.fornecedores[fi].mensagens=[];
+  const agora=new Date();
+  const hora=agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  db.fornecedores[fi].mensagens.push({id:'m_'+Date.now(),de:'adm',texto,hora,lida:true});
+  saveDB(db);
+  input.value='';
+  renderChatFornecedor(db.fornecedores[fi]);
+  showToast('Mensagem enviada!');
+}
+
+function removerFornecedor(id){
+  if(!confirm('Remover este fornecedor?')) return;
+  const db=getDB();
+  db.fornecedores=(db.fornecedores||[]).filter(f=>f.id!==id);
+  saveDB(db);
+  if(fornChatAtivo===id){ fornChatAtivo=null; document.getElementById('forn-chat-section').style.display='none'; }
+  showToast('Fornecedor removido.');
+  renderAdmFornecedores();
+}
+
 // ------- TOAST -------
 let toastTimer;
 function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3500); }
